@@ -22,7 +22,7 @@ final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
     DateTime.now(): [
       Event('Today\'s Event 1'),
       Event('Today\'s Event 2'),
-      Event('Today\'s Event 3'),
+      Event('Today\'s Event 333333'),
     ],
   });
 

@@ -11,18 +11,11 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(34, 69, 151, 1),
 
-      appBar: AppBar(
-        title: Text('Behaviorome'),
-        centerTitle: true,
-        backgroundColor: Colors.black54,
-        elevation: 5,
-      ),
-
       body: Center(
         child: Column(
           children: <Widget>[
             // RECORD ICON
-            SizedBox(height: 40.0),
+            SizedBox(height: 100.0),
             Icon(
               Icons.watch,
               color: Colors.white,

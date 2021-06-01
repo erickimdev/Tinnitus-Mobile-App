@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 class PollPage extends StatefulWidget {
   @override
@@ -29,18 +28,11 @@ class _PollPageState extends State<PollPage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(34, 69, 151, 1),
 
-      appBar: AppBar(
-        title: Text('MyFeelings Questionnaire'),
-        centerTitle: true,
-        backgroundColor: Colors.black54,
-        elevation: 5,
-      ),
-
       body: Center(
         child: Column(
           children: <Widget>[
             // POLL ICON
-            SizedBox(height: 40.0),
+            SizedBox(height: 100.0),
             Icon(
               Icons.poll,
               color: Colors.white,

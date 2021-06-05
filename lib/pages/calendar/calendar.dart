@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import 'utils.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -23,7 +24,9 @@ class _CalendarPageState extends State<CalendarPage> {
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay));
   }
 
-  List<Event> _getEventsForDay(DateTime day) => kEvents[day] ?? [];
+  List<Event> _getEventsForDay(DateTime day) {
+    return kEvents[day] ?? [];
+  }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
@@ -75,12 +78,13 @@ class _CalendarPageState extends State<CalendarPage> {
           TableCalendar<Event>(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 3, 14),
+            daysOfWeekHeight: 22,
             focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             calendarFormat: _calendarFormat,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             eventLoader: _getEventsForDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
             onDaySelected: _onDaySelected,
+            pageJumpingEnabled: true,
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
                 setState(() {
@@ -91,7 +95,6 @@ class _CalendarPageState extends State<CalendarPage> {
             onPageChanged: (focusedDay) {
               _focusedDay = focusedDay;
             },
-            pageJumpingEnabled: true,
 
             // header style changes
             headerStyle: HeaderStyle(
@@ -114,7 +117,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 color: Colors.blue[800],
               )
             ),
-
             // days of week style changes
             daysOfWeekStyle: DaysOfWeekStyle(
               decoration: BoxDecoration(
@@ -130,7 +132,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 color: Colors.grey[800],
               )
             ),
-
             // calendar style changes
             calendarStyle: CalendarStyle(
               markerSize: 4,
@@ -177,10 +178,17 @@ class _CalendarPageState extends State<CalendarPage> {
                   color: Colors.white,
                   size: 27,
                 ),
-                onPressed: () {
-                  print("_focusedDay: $_focusedDay");
-                  print("_selectedDay: $_selectedDay");
-                  print("_selectedEvents: $_selectedEvents");
+                onPressed: () async {
+                  Event event = Event("SAMPLE TITLE", "${DateFormat.jm().format(DateTime.now())}");
+                  setState(() {
+                    if(kEvents[_selectedDay] == null) {
+                      kEvents.addAll({_selectedDay: [event,]});
+                    }
+                    else {
+                      kEvents[_selectedDay].add(event);
+                    }
+                    _selectedEvents.value = _getEventsForDay(_selectedDay);
+                  });
                 },
                 splashRadius: 20,
               ),
@@ -195,7 +203,7 @@ class _CalendarPageState extends State<CalendarPage> {
             endIndent: 20,
           ),
 
-          // list of events
+          // TINNITUS EVENTS
           Expanded(
             child: ValueListenableBuilder<List<Event>>(
               valueListenable: _selectedEvents,
@@ -221,6 +229,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         onTap: () => print('${value[index]}'),
                         onLongPress: () {},
                         contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                        subtitle: Text(
+                          "Recorded at ${value[index].time}",
+                          style: TextStyle(
+                            color: Colors.white70,
+                          ),
+                        ),
                         title: Text(
                           '${value[index]}',
                           style: TextStyle(
@@ -229,19 +243,19 @@ class _CalendarPageState extends State<CalendarPage> {
                           ),
                         ),
                         trailing: IconButton(
-                          onPressed: () async {
-                            bool choice = await _showDialog("${value[index]}");
-                            setState(() {
-                              if(choice){
-                                value.removeAt(index);
-                              }
-                            });
-                          },
                           icon: Icon(
                             Icons.delete,
                             color: Colors.grey[300],
                           ),
                           splashRadius: 20,
+                          onPressed: () async {
+                            bool choice = await _showDialog("${value[index]}");
+                            setState(() {
+                              if(choice) {
+                                value.removeAt(index);
+                              }
+                            });
+                          },
                         ),
                       ),
                     );
@@ -257,6 +271,16 @@ class _CalendarPageState extends State<CalendarPage> {
             height: 0,
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigator.pushNamed(context, "/add_event", arguments: {
+          //   "key":"value!!!!!"
+          // });
+          print("________________________________");
+          print("_________________________");
+        },
+        child: Text("DEBUG"),
       ),
     );
   }

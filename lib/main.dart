@@ -3,6 +3,7 @@ import 'pages/calendar/calendar.dart';
 import 'pages/poll.dart';
 import 'pages/smartwatch.dart';
 import 'pages/profile.dart';
+import 'pages/calendar/addEvent.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => _MainPage(),
         '/calendar': (context) => CalendarPage(),
+        '/add_event': (context) => AddEvent(),
         '/poll': (context) => PollPage(),
         '/smartwatch': (context) => SmartwatchPage(),
         '/profile': (context) => ProfilePage(),

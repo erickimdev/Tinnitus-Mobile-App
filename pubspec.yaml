@@ -24,8 +24,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  table_calendar: ^3.0.0
-  flutter_spinkit: ^4.1.2 # loading screen
+  table_calendar: ^3.0.0  # calendar
+  flutter_spinkit: ^4.1.2 # loading screen icon
+  intl: ^0.17.0           # datetime parser
   cupertino_icons: ^1.0.2 # icons
 
 dev_dependencies:

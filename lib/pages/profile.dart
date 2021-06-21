@@ -15,18 +15,18 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(34, 69, 151, 1),
 
-      // appBar: AppBar(
-      //   title: Text('Profile Page'),
-      //   centerTitle: true,
-      //   backgroundColor: Colors.black54,
-      //   elevation: 5,
-      // ),
+      appBar: AppBar(
+        title: Text('Profile Page'),
+        centerTitle: true,
+        backgroundColor: Colors.black12,
+        elevation: 5,
+      ),
 
       body: Center(
         child: Column(
           children: <Widget>[
             // PROFILE ICON
-            SizedBox(height: 100.0),
+            SizedBox(height: 30.0),
             Icon(
               Icons.account_circle,
               color: Colors.white,

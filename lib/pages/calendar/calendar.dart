@@ -39,7 +39,7 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
-  Future<bool> _showDialog(String eventName) async {
+  Future<bool> deleteDialog(String eventName) async {
     return await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -179,14 +179,13 @@ class _CalendarPageState extends State<CalendarPage> {
                   size: 27,
                 ),
                 onPressed: () async {
-                  Event event = Event("SAMPLE TITLE", "${DateFormat.jm().format(DateTime.now())}");
+                  // go to "Add Event" page
+                  await Navigator.pushNamed(context, "/add_event", arguments: {
+                    "day" : _selectedDay,
+                  });
+
+                  // update list view
                   setState(() {
-                    if(kEvents[_selectedDay] == null) {
-                      kEvents.addAll({_selectedDay: [event,]});
-                    }
-                    else {
-                      kEvents[_selectedDay].add(event);
-                    }
                     _selectedEvents.value = _getEventsForDay(_selectedDay);
                   });
                 },
@@ -249,7 +248,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           ),
                           splashRadius: 20,
                           onPressed: () async {
-                            bool choice = await _showDialog("${value[index]}");
+                            bool choice = await deleteDialog("${value[index]}");
                             setState(() {
                               if(choice) {
                                 value.removeAt(index);
@@ -273,17 +272,18 @@ class _CalendarPageState extends State<CalendarPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: () {
-          // Navigator.pushNamed(context, "/add_event", arguments: {
-          //   "key":"value!!!!!"
-          // });
-          print("________________________________");
-          print("_________________________");
+          // print("kEvents: $kEvents");
+          // print("${kEvents[DateTime.now()][0].q1}");
+          // print("${kEvents[DateTime.now()][0].q2}");
+          // print("${kEvents[DateTime.now()][0].q3}");
+          // print("${kEvents[DateTime.now()][0].q4}");
+          // print("${kEvents[DateTime.now()][0].q5}");
+          // print("${kEvents[DateTime.now()][0].q6}");
         },
-        child: Text("DEBUG"),
+        child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
       ),
     );
   }
 }
-
-///////////////// HELPER FUNCTIONS /////////////////

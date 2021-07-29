@@ -5,8 +5,21 @@ import 'pages/poll/poll.dart';
 import 'pages/smartwatch/smartwatch.dart';
 import 'pages/profile.dart';
 import 'pages/calendar/addEvent.dart';
+import 'pages/smartwatch/parts/step.dart';
+import 'pages/smartwatch/parts/activity.dart';
+import 'pages/smartwatch/parts/sleep.dart';
+import 'pages/smartwatch/parts/heart.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+User user;
+bool loggedIn = false;
+bool dailySubmitted = false;
+bool calendarSynced = false;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -27,7 +40,14 @@ class MyApp extends StatelessWidget {
         '/poll': (context) => PollPage(),
 
         '/smartwatch': (context) => SmartwatchPage(),
+        '/step': (context) => StepsPage(),
+        '/activity': (context) => ActivityPage(),
+        '/sleep': (context) => SleepPage(),
+        '/heart': (context) => HeartPage(),
       },
+      theme: ThemeData(
+        fontFamily: 'mont-med',
+      ),
     );
   }
 }
@@ -79,10 +99,24 @@ class _MainPageState extends State<_MainPage> {
         ],
         onTap: (index) {
           setState(() {
-            _currentIndex = index;
+            if (!loggedIn && (index == 1 || index == 2 || index == 3)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("You must be logged in"),
+                  duration: Duration(milliseconds: 1000),
+                ),
+              );
+            }
+            else _currentIndex = index;
           });
         },
       ),
     );
   }
+}
+
+class Login {
+  bool loggedIn;
+
+  Login(this.loggedIn);
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../FirestoreService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tinnitus_app/main.dart';
+import 'package:intl/intl.dart';
 
 class PollPage extends StatefulWidget {
   @override
@@ -6,6 +10,8 @@ class PollPage extends StatefulWidget {
 }
 
 class _PollPageState extends State<PollPage> {
+  bool submitted;
+
   int q1;
   int q2;
   int q3;
@@ -44,6 +50,39 @@ class _PollPageState extends State<PollPage> {
     });
   }
 
+  Future<void> confirmSubmit() async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Submit Answers?"),
+          content: new Text("This will overwrite any existing data for today."),
+          actions: <Widget>[
+            new TextButton(
+              child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new TextButton(
+              child: new Text("SUBMIT", style: TextStyle(fontSize: 15,),),
+              onPressed: () async {
+                if (user != null) {
+                  await FirestoreService(uid: "${user.email}").updateDailyFeelings(q1, q2, q3, q4, q5, q6);
+                  Navigator.of(context).pop();
+                  setState(() {
+                    dailySubmitted = true;
+                  });
+                }
+                else print("not logged in");
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void nextQuestion() {
     setState(() {
       if(groupValue() != null) {
@@ -53,9 +92,7 @@ class _PollPageState extends State<PollPage> {
       else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              "Please fill in an answer"
-            ),
+            content: Text("Please fill in an answer"),
             duration: Duration(milliseconds: 1500),
           ),
         );
@@ -65,16 +102,15 @@ class _PollPageState extends State<PollPage> {
   void prevQuestion() {
     setState(() {
       if(_index > 0) _index -= 1;
-      else if(_index == 0) print("cant go back");
+      // else if(_index == 0) print("cant go back");
     });
   }
-  void submitQuestion() {
+  void submitQuestion() async {
     setState(() {
-      print("NO MOER!!!");
+      confirmSubmit();
     });
   }
 
-  // String _text, int _groupValue, int _value, int questionNum
   Widget radioButton(String _text, int _groupValue, int _value, ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -89,28 +125,70 @@ class _PollPageState extends State<PollPage> {
         Text(
           _text,
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.w600,
             color: Colors.white70,
+            fontFamily: 'mont-light',
           ),
         ),
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(34, 69, 151, 1),
+  Widget _body(context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    // if(snapshot.data == null) return Center(child: CircularProgressIndicator());
 
-      appBar: AppBar(
-        title: Text('Daily Questions'),
-        centerTitle: true,
-        backgroundColor: Colors.black12,
-        elevation: 5,
-      ),
+    // check firebase if quiz was already taken
+    if (snapshot.hasData) {
+      String date = DateFormat('MM-dd-yyyy').format(DateTime.now());
+      snapshot.data.docs.toList().forEach((i) {
+        if (i.id == "$date") {
+          dailySubmitted = true;
+        }
+      });
+    }
 
-      body: Center(
+    if (dailySubmitted) {
+      return Center(
+        child: Column(
+          children: <Widget>[
+            SizedBox(height: 185.0),
+            Icon(
+              Icons.check_circle,
+              color: Colors.white,
+              size: 80,
+            ),
+
+            SizedBox(height: 40.0),
+            Text("Your answers have\nbeen recorded.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+              ),
+            ),
+
+            SizedBox(height: 20.0),
+            // TextButton.icon(
+            //   onPressed: () {
+            //     setState(() {
+            //       dailySubmitted = false;
+            //     });
+            //   },
+            //   icon: Icon(Icons.logout),
+            //   label: Text('Retake Quiz',
+            //     style: TextStyle(
+            //       fontSize: 16,
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
+      );
+    }
+
+    else {
+      return Center(
         child: Column(
           children: <Widget>[
             // POLL ICON
@@ -128,9 +206,9 @@ class _PollPageState extends State<PollPage> {
                   'Question ${_index+1}/6',
                   style: TextStyle(
                     letterSpacing: 0.7,
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 23.0,
                     color: Colors.white70,
+                    fontFamily: 'mont',
                   ),
                 ),
                 SizedBox(height: 17),
@@ -139,37 +217,46 @@ class _PollPageState extends State<PollPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     letterSpacing: 0.7,
-                    fontSize: 24.0,
-                    // fontWeight: FontWeight.bold,
-                    color: Colors.white70,
+                    fontSize: 24,
+                    color: Colors.grey[300],
+                    fontFamily: 'mont',
                   ),
                 ),
+                // SizedBox(height: 20.0),
+                // Divider(
+                //   color: Colors.white,
+                //   thickness: 0.6,
+                //   height: 0,
+                //   indent: 50,
+                //   endIndent: 50,
+                // ),
 
                 // RADIO BUTTONS
-                SizedBox(height: 24.0),
-                radioButton("Never          ", groupValue(), 1, ),
-                radioButton("Rarely         ", groupValue(), 2, ),
+                SizedBox(height: 18.0),
+                radioButton("Never           ", groupValue(), 1, ),
+                radioButton("Rarely          ", groupValue(), 2, ),
                 radioButton("Sometimes", groupValue(), 3, ),
                 radioButton("Often          ", groupValue(), 4, ),
-                radioButton("Always       ", groupValue(), 5, ),
+                radioButton("Always        ", groupValue(), 5, ),
 
                 // BACK/NEXT BUTTONS
-                SizedBox(height: 35.0),
+                SizedBox(height: 25.0),
                 Row(
                   children: [
-                    SizedBox(width: 65),
+                    SizedBox(width: 70),
                     TextButton.icon(
                       onPressed: prevQuestion,
                       icon: Icon(
                         Icons.subdirectory_arrow_left,
                         color: Colors.blue[300],
-                        size: 30,
+                        size: 28,
                       ),
                       label: Text(
                         "Back",
                         style: TextStyle(
-                          fontSize: 27,
+                          fontSize: 24,
                           color: Colors.blue[200],
+                          fontFamily: 'mont',
                         ),
                       ),
                     ),
@@ -179,37 +266,62 @@ class _PollPageState extends State<PollPage> {
                       icon: Icon(
                         Icons.subdirectory_arrow_right,
                         color: Colors.blue[300],
-                        size: 30,
+                        size: 28,
                       ),
                       label: Text(
                         "Next",
                         style: TextStyle(
-                          fontSize: 27,
+                          fontSize: 24,
                           color: Colors.blue[200],
+                          fontFamily: 'mont',
                         ),
                       ),
                     ),
                   ],
                 ),
               ],
-            )
+            ),
           ],
         ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(34, 69, 151, 1),
+
+      appBar: AppBar(
+        title: Text('Daily Questions'),
+        centerTitle: true,
+        backgroundColor: Colors.black12,
+        elevation: 5,
       ),
 
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red,
-        onPressed: () {
-          print("q1: $q1");
-          print("q2: $q2");
-          print("q3: $q3");
-          print("q4: $q4");
-          print("q5: $q5");
-          print("q6: $q6");
-          print("________");
-        },
-        child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users')
+            .doc('${user.email}').collection("Daily Feelings").snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          return _body(context, snapshot);
+        }
       ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: Colors.red,
+      //   onPressed: () async {
+      //     print("user: $user");
+      //     print("q1: $q1");
+      //     print("q2: $q2");
+      //     print("q3: $q3");
+      //     print("q4: $q4");
+      //     print("q5: $q5");
+      //     print("q6: $q6");
+      //     print("________");
+      //   },
+      //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
+      // ),
+
     );
   }
 }

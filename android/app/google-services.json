@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "881408803162",
+    "project_id": "tinnitus-app",
+    "storage_bucket": "tinnitus-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:881408803162:android:38dcef2f19672a92723363",
+        "android_client_info": {
+          "package_name": "buffalo.reu.tinnitus_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "881408803162-8ao7sbuk40p6tsvgppcfhc5qmi9aip4l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDh7M1Eb_Msu-DkyacXB6hQqdt9LgqbFNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "881408803162-8ao7sbuk40p6tsvgppcfhc5qmi9aip4l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

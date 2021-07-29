@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tinnitus_app/main.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,22 +9,33 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Widget button(IconData _icon, String _text, String _route) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(75, 23, 0, 0),
+      padding: const EdgeInsets.fromLTRB(67, 23, 0, 0),
       child: Row(
         children: [
           Icon(
             _icon,
             color: Colors.white,
-            size: 45,
+            size: 38,
           ),
           SizedBox(width: 5),
           TextButton(
-            onPressed: () {Navigator.pushNamed(context, _route);},
+            onPressed: () {
+              if (!loggedIn) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("You must be logged in"),
+                    duration: Duration(milliseconds: 1000),
+                  ),
+                );
+              }
+              else Navigator.pushNamed(context, _route);
+            },
             child: Text(
               _text,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 color: Colors.white,
+                fontFamily: 'mont-med',
               ),
             ),
 

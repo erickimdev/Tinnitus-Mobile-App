@@ -1,6 +1,6 @@
 # tinnitus_app
 
-Android/IOS application for tinnitus patients for daily physical and mental logging
+A new Flutter project.
 
 ## Getting Started
 

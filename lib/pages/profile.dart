@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
-              fontSize: 30,
+              fontSize: 25,
             ),
           ),
         ],

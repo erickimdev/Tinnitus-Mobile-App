@@ -9,6 +9,7 @@ import 'pages/smartwatch/parts/step.dart';
 import 'pages/smartwatch/parts/activity.dart';
 import 'pages/smartwatch/parts/sleep.dart';
 import 'pages/smartwatch/parts/heart.dart';
+import 'pages/smartwatch/parts/test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         '/activity': (context) => ActivityPage(),
         '/sleep': (context) => SleepPage(),
         '/heart': (context) => HeartPage(),
+        '/test': (context) => TestPage(),
       },
       theme: ThemeData(
         fontFamily: 'mont-med',

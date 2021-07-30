@@ -143,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                     headerPadding: EdgeInsets.symmetric(vertical: 4.5),
                     decoration: BoxDecoration(
-                      color: Colors.blue[800],
+                      color: Colors.blue[700],
                     )
                 ),
                 // days of week style changes

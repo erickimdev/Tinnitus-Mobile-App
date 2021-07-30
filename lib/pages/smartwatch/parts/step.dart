@@ -144,12 +144,9 @@ class _StepsPageState extends State<StepsPage> {
   }
 
   void readData() async {
-    print("1111111");
     bool permissionsGiven = await readPermissions();
-    print("2222222");
 
     if (permissionsGiven) {
-      print("permissions given");
       DateTime current = DateTime.now();
       DateTime dateFrom;
       DateTime dateTo;

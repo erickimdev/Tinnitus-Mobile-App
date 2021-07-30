@@ -29,7 +29,7 @@ dependencies:
   intl: ^0.17.0             # datetime parser
   cupertino_icons: ^1.0.2   # icons
   fit_kit: ^1.1.2           # smartwatch
-  health: ^3.0.6            # smartwatch 2
+  health: ^3.1.0            # smartwatch 2
   pie_chart: ^5.0.0         # pie chart
   fl_chart: ^0.36.2         # all charts
   charts_flutter: ^0.10.0   # all chart

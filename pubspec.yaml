@@ -24,16 +24,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  table_calendar: ^3.0.0    # calendar
-  flutter_spinkit: ^4.1.2   # loading screen icon
-  intl: ^0.17.0             # datetime parser
-  cupertino_icons: ^1.0.2   # icons
-  fit_kit: ^1.1.2           # smartwatch
-  health: ^3.1.0            # smartwatch 2
-  pie_chart: ^5.0.0         # pie chart
-  fl_chart: ^0.36.2         # all charts
-  charts_flutter: ^0.10.0   # all chart
-  fluttertoast: ^7.1.6      # error message popup
+  table_calendar: ^3.0.0        # calendar
+  flutter_spinkit: ^4.1.2       # loading screen icon
+  intl: ^0.17.0                 # datetime parser
+  cupertino_icons: ^1.0.2       # icons
+  health: 3.0.4                 # smartwatch
+  fit_kit: ^1.1.2               # smartwatch
+  charts_flutter: ^0.10.0       # all chart
+  date_util: ^0.1.4             # dates
+  permission_handler: ^8.1.4+2  # permissions
+  tuple: ^2.0.0                 # tuples
 
   # firebase
   firebase_core: ^1.1.0

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fit_kit/fit_kit.dart';
 import 'dart:async';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tinnitus_app/main.dart';
 
 class SmartwatchPage extends StatefulWidget {
   @override
@@ -45,6 +47,16 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     );
   }
 
+  void askPermissions() async {
+    activityPermission = await Permission.activityRecognition.request();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    askPermissions();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -62,14 +74,24 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 30.0),
+              SizedBox(height: 50.0),
               Icon(
                 Icons.watch,
                 color: Colors.white,
                 size: 100,
               ),
 
-              SizedBox(height: 100.0),
+              SizedBox(height: 60.0),
+              Text(
+                "Choose a metric.",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontFamily: "mont-med",
+                ),
+              ),
+
+              SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -78,26 +100,26 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
                   button("Activity", Icons.directions_bike, "/activity", 13),
                 ],
               ),
-              SizedBox(height: 20.0),
+              SizedBox(height: 25.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  button("Sleep", Icons.bed, "/sleep", 20),
+                  button("Sleep", Icons.bedtime_rounded, "/sleep", 20.5),
                   SizedBox(width: 20,),
-                  button("Heart", Icons.favorite, "/heart", 21),
+                  button("Heart", Icons.favorite, "/heart", 20),
                 ],
               ),
             ],
           ),
         ),
 
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () {
-            Navigator.pushNamed(context, "/test");
-          },
-          child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   backgroundColor: Colors.red,
+        //   onPressed: () {
+        //     Navigator.pushNamed(context, "/test");
+        //   },
+        //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
+        // ),
 
       ),
     );

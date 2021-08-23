@@ -152,7 +152,7 @@ class _PollPageState extends State<PollPage> {
       return Center(
         child: Column(
           children: <Widget>[
-            SizedBox(height: 185.0),
+            SizedBox(height: 195.0),
             Icon(
               Icons.check_circle,
               color: Colors.white,
@@ -211,7 +211,7 @@ class _PollPageState extends State<PollPage> {
                     fontFamily: 'mont',
                   ),
                 ),
-                SizedBox(height: 17),
+                SizedBox(height: 20),
                 Text(
                   '${_questions[_index]}',
                   textAlign: TextAlign.center,
@@ -240,7 +240,7 @@ class _PollPageState extends State<PollPage> {
                 radioButton("Always        ", groupValue(), 5, ),
 
                 // BACK/NEXT BUTTONS
-                SizedBox(height: 25.0),
+                SizedBox(height: 35.0),
                 Row(
                   children: [
                     SizedBox(width: 70),
@@ -310,14 +310,7 @@ class _PollPageState extends State<PollPage> {
       // floatingActionButton: FloatingActionButton(
       //   backgroundColor: Colors.red,
       //   onPressed: () async {
-      //     print("user: $user");
-      //     print("q1: $q1");
-      //     print("q2: $q2");
-      //     print("q3: $q3");
-      //     print("q4: $q4");
-      //     print("q5: $q5");
-      //     print("q6: $q6");
-      //     print("________");
+      //     print("activityPermission: $activityPermission");
       //   },
       //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
       // ),

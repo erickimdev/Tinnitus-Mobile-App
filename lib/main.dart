@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tinnitus_app/pages/smartwatch/references/fitkit.dart';
 import 'pages/home.dart';
 import 'pages/calendar/calendar.dart';
 import 'pages/poll/poll.dart';
@@ -9,7 +10,7 @@ import 'pages/smartwatch/parts/step.dart';
 import 'pages/smartwatch/parts/activity.dart';
 import 'pages/smartwatch/parts/sleep.dart';
 import 'pages/smartwatch/parts/heart.dart';
-import 'pages/smartwatch/parts/test.dart';
+import 'pages/smartwatch/references/healthkit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -17,6 +18,7 @@ User user;
 bool loggedIn = false;
 bool dailySubmitted = false;
 bool calendarSynced = false;
+var activityPermission;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/activity': (context) => ActivityPage(),
         '/sleep': (context) => SleepPage(),
         '/heart': (context) => HeartPage(),
-        '/test': (context) => TestPage(),
+        '/test': (context) => HealthKitPage(),
       },
       theme: ThemeData(
         fontFamily: 'mont-med',

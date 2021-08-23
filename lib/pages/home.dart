@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tinnitus_app/main.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,7 +22,8 @@ class _HomePageState extends State<HomePage> {
           SizedBox(width: 5),
           TextButton(
             onPressed: () {
-              if (!loggedIn) {
+              if (!loggedIn) {      // enable for proper login use
+              // if (loggedIn) {    // enable for convenient smartwatch
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text("You must be logged in"),
@@ -112,6 +115,15 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+
+      // floatingActionButton: FloatingActionButton(
+      //   child: Text("LOGIN"),
+      //   onPressed: () async {
+      //     user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
+      //     loggedIn = true;
+      //   },
+      // ),
+
     );
   }
 }

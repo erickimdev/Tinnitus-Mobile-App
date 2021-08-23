@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tinnitus_app/main.dart';
 import 'calendar/utils.dart';
+import 'package:fit_kit/fit_kit.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -15,6 +16,48 @@ class _ProfilePageState extends State<ProfilePage> {
   String _email = '';
   String _password = '';
 
+  Future<bool> confirmLogout() async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text("Are you sure you want to logout?"),
+          content: new Text("You will need to log back in to use the modules."),
+          actions: <Widget>[
+            new TextButton(
+              child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new TextButton(
+              child: new Text("LOGOUT", style: TextStyle(fontSize: 15,),),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                setState(() {
+                  LR_appbar = "Register";
+                  FitKit.revokePermissions();
+                  user = null;
+                  loggedIn = false;
+                  dailySubmitted = false;
+                  calendarSynced = false;
+                  kEvents.clear();
+                  Navigator.of(context).pop();
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("You have logged out."),
+                    duration: Duration(milliseconds: 1500),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _body() {
     if (loggedIn) {
       setState(() {
@@ -22,20 +65,39 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       return Column(
         children: <Widget>[
-          SizedBox(height: 70.0),
-          Text("You are logged in\n${user.email}",
+          SizedBox(height: 280.0),
+          Text("You are logged in",
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-            ),
-          ),
+            style: TextStyle(color: Colors.white, fontSize: 30,),),
+          SizedBox(height: 10,),
+          Text("${user.email}",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 25, fontFamily: 'mont-bold'),),
         ],
       );
     }
     else {
       return Column(
         children: [
+          // PROFILE ICON
+          SizedBox(height: 30.0),
+          Icon(
+            Icons.account_circle,
+            color: Colors.white,
+            size: 80,
+          ),
+          SizedBox(height: 15.0),
+          Text(
+            'My Profile',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 70.0),
+
           // EMAIL ADDRESS FORM
           Container(
             width: 350,
@@ -92,20 +154,50 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(height: 30.0),
           TextButton.icon(
             onPressed: () async {
-              if (LR_button == "Register") {
-                // register
-                user = (await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password)).user;
+              if (_email.isEmpty || _password.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Email and password fields must not be blank"),
+                    duration: Duration(milliseconds: 1500),
+                  ),
+                );
               }
-              else if (LR_button == "Login") {
-                // login
-                user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password)).user;
-              }
+              else {
+                try {
+                  if (LR_button == "Register") {
+                    // register
+                    user = (await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                        email: _email, password: _password)).user;
+                  }
+                  else if (LR_button == "Login") {
+                    // login
+                    user = (await FirebaseAuth.instance.signInWithEmailAndPassword(
+                            email: _email, password: _password)).user;
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("${e.message}"),
+                      duration: Duration(milliseconds: 1500),
+                    ),
+                  );
+                }
 
-              if (user != null) {
-                setState(() {
-                  LR_appbar = "Logout";
-                  loggedIn = true;
-                });
+                if (user != null) {
+                  setState(() {
+                    LR_appbar = "Logout";
+                    loggedIn = true;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("You are logged in."),
+                        duration: Duration(milliseconds: 1500),
+                      ),
+                    );
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context);
+                  });
+                }
               }
             },
             icon: Icon(
@@ -158,15 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
               });
               if (LR_appbar == "Logout") {
-                await FirebaseAuth.instance.signOut();
-                setState(() {
-                  LR_appbar = "Register";
-                  user = null;
-                  loggedIn = false;
-                  dailySubmitted = false;
-                  calendarSynced = false;
-                  kEvents.clear();
-                });
+                confirmLogout();
               }
             },
             child: Text(
@@ -179,41 +263,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
 
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            // PROFILE ICON
-            SizedBox(height: 30.0),
-            Icon(
-              Icons.account_circle,
-              color: Colors.white,
-              size: 80,
-            ),
-            SizedBox(height: 15.0),
-            Text(
-              'My Profile',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 70.0),
-            _body(),
-          ],
-        ),
-      ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   backgroundColor: Colors.red,
-      //   onPressed: () {
-      //     print("email: $_email");
-      //     print("password: $_password");
-      //     print("user: $user");
-      //   },
-      //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
-      // ),
+      body: Center(child: _body(),),
 
     );
   }

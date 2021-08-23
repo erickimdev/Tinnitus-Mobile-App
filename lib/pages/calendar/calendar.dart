@@ -88,10 +88,16 @@ class _CalendarPageState extends State<CalendarPage> {
               DateTime _day = new DateFormat("MM-dd-yyyy").parse(i.id.split(" ")[0]);
               String time = i.id.split(" ")[1] + " " + i.id.split(" ")[2];
               int _q1 = i["question 1"];
-              int _q2 = i["question 2"];
+              String _q2 = i["question 2"];
 
-              Event event = Event(
-                  "Tinnitus Event", time, _q1, _q2, null, null, null, null);
+              List<String> q2split = _q2.split(" ");
+              List<bool> q2list = new List(5);
+              for (var i = 0; i < 5; i++) {
+                if (q2split.contains(i.toString())) q2list[i] = true;
+                else q2list[i] = false;
+              }
+
+              Event event = Event("Tinnitus Event", time, _q1, q2list);
 
               if (kEvents[_day] == null) kEvents.addAll({_day: [event,]});
               else kEvents[_day].add(event);

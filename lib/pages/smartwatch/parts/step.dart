@@ -137,8 +137,6 @@ class _StepsPageState extends State<StepsPage> {
     setState(() {});
   }
   Future firestore() async {
-    String uid = user.email;
-
     // FEATURES
     int steps = _stepsDay;
     int distance = _distanceDay;
@@ -419,13 +417,13 @@ class _StepsPageState extends State<StepsPage> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     _mapDistance.forEach((key, value) {
-      //       print("$key - $value");
-      //     });
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _mapDistance.forEach((key, value) {
+            print("$key - $value");
+          });
+        },
+      ),
 
     );
   }

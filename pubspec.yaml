@@ -33,7 +33,6 @@ dependencies:
   charts_flutter: ^0.10.0       # all chart
   date_util: ^0.1.4             # dates
   permission_handler: ^8.1.4+2  # permissions
-  tuple: ^2.0.0                 # tuples
 
   # firebase
   firebase_core: ^1.1.0

@@ -70,10 +70,14 @@ class _ActivityPageState extends State<ActivityPage> {
             _mapMM[date.hour] = _mapMM[date.hour]..addAll([value]);
           }
           if (_allDataDay[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            _energyBurnedDay += value;
-            if (!_mapCalories.containsKey(date.hour)) _mapCalories[date.hour] = [];
-            _mapCalories[date.hour] = _mapCalories[date.hour]..addAll([value]);
-            _graphDay.add(new EnergyBurned(date, _energyBurnedDay));
+            if (date != dayEnd) {
+              if (!_mapCalories.containsKey(date.hour)) _mapCalories[date.hour] = [];
+              else {
+                _mapCalories[date.hour] = _mapCalories[date.hour]..addAll([value]);
+                _graphDay.add(new EnergyBurned(date, _energyBurnedDay));
+                _energyBurnedDay += value;
+              }
+            }
           }
         }
 
@@ -86,9 +90,13 @@ class _ActivityPageState extends State<ActivityPage> {
 
           if (_allDataWeek[i].type == HealthDataType.MOVE_MINUTES) _moveMinsWeek += value;
           if (_allDataWeek[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            if (value < 4000) _energyBurnedWeek += value;
-            if (!_graphWeekMap.containsKey(date.day)) _graphWeekMap[date.day] = [];
-            _graphWeekMap[date.day] = _graphWeekMap[date.day]..addAll([value]);
+            if (date != lastDayOfWeek) {
+              if (!_graphWeekMap.containsKey(date.day)) _graphWeekMap[date.day] = [];
+              else {
+                _graphWeekMap[date.day] = _graphWeekMap[date.day]..addAll([value]);
+                _energyBurnedWeek += value;
+              }
+            }
           }
         }
 
@@ -101,9 +109,13 @@ class _ActivityPageState extends State<ActivityPage> {
 
           if (_allDataMonth[i].type == HealthDataType.MOVE_MINUTES) _moveMinsMonth += value;
           if (_allDataMonth[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            if (value < 4000) _energyBurnedMonth += value;
-            if (!_graphMonthMap.containsKey(date.day)) _graphMonthMap[date.day] = [];
-            _graphMonthMap[date.day] = _graphMonthMap[date.day]..addAll([value]);
+            if (date != lastDayOfMonth) {
+              if (!_graphMonthMap.containsKey(date.day)) _graphMonthMap[date.day] = [];
+              else {
+                _graphMonthMap[date.day] = _graphMonthMap[date.day]..addAll([value]);
+                _energyBurnedMonth += value;
+              }
+            }
           }
         }
 
@@ -137,8 +149,6 @@ class _ActivityPageState extends State<ActivityPage> {
     setState(() {});
   }
   Future firestore() async {
-    String uid = user.email;
-
     // FEATURES
     int burned = _energyBurnedDay;
     int MM = _moveMinsDay;
@@ -419,13 +429,20 @@ class _ActivityPageState extends State<ActivityPage> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     _graphDay.forEach((i) {
-      //       print("${i.date} - ${i.burned}");
-      //     });
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // _graphDay.forEach((i) {
+          //   print("${i.date} - ${i.burned}");
+          // });
+          // print("\n\n");
+          // _graphWeekMap.forEach((key, value) {
+          //   print("$key - $value");
+          // });
+          _graphDay.forEach((i) {
+            print("${i.date} - ${i.burned}");
+          });
+        },
+      ),
 
     );
   }

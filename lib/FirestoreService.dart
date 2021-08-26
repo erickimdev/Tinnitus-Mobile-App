@@ -122,5 +122,14 @@ class FirestoreService {
 
 
   // SLEEP
-
+    // features
+  Future<void> sleepFeatures(DateTime day, int asleep, int awake, int inBed) async {
+    String date = DateFormat('MM-dd-yyyy').format(day).toString();
+    return await userCollection.doc(uid).collection('Behaviorome').doc(date)
+        .collection('Sleep').doc('Features').set({
+      'Time Asleep': asleep,
+      'Time Awake': awake,
+      'Time in Bed': inBed,
+    });
+  }
 }

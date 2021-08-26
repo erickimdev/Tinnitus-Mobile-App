@@ -65,8 +65,8 @@ class _HeartPageState extends State<HeartPage> {
           DateTime date = _allDataDay[i].dateTo;
           int value = _allDataDay[i].value.floor();
 
-          if (_allDataDay[i].type == HealthDataType.WALKING_HEART_RATE) _walkHRsDay.add(value);
           if (_allDataDay[i].type == HealthDataType.RESTING_HEART_RATE) _restHRsDay.add(value);
+          if (_allDataDay[i].type == HealthDataType.WALKING_HEART_RATE) _walkHRsDay.add(value);
           if (_allDataDay[i].type == HealthDataType.HEART_RATE) {
             _HRsDay.add(value);
             if (!_mapDay.containsKey(date.hour)) _mapDay[date.hour] = [];
@@ -160,8 +160,6 @@ class _HeartPageState extends State<HeartPage> {
     setState(() {});
   }
   Future firestore() async {
-    String uid = user.email;
-
     // FEATURES
     int avgHR = _HRsDay.reduce((a,b) => a+b).toDouble() ~/ _HRsDay.length;
     int avgRestingHR = _restHRsDay.reduce((a,b) => a+b).toDouble() ~/ _restHRsDay.length;
@@ -188,7 +186,7 @@ class _HeartPageState extends State<HeartPage> {
     List<HealthDataType> types = [
       HealthDataType.HEART_RATE,
       // HealthDataType.RESTING_HEART_RATE,   // NOT AVAILABLE ON ANDROID
-      // HealthDataType.WALKING_HEART_RATE,   // NOT AVAILALBE ON ANDROID
+      // HealthDataType.WALKING_HEART_RATE,   // NOT AVAILABLE ON ANDROID
     ];
 
     // read data types
@@ -457,10 +455,10 @@ class _HeartPageState extends State<HeartPage> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+        },
+      ),
 
     );
   }

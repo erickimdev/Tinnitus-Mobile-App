@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tinnitus_app/pages/smartwatch/references/fitkit.dart';
 import 'pages/home.dart';
 import 'pages/calendar/calendar.dart';
 import 'pages/poll/poll.dart';

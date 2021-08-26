@@ -1,3 +1,4 @@
+import 'package:charts_flutter/flutter.dart';
 import 'package:health/health.dart';
 import 'package:tinnitus_app/pages/smartwatch/parts/step.dart';
 import '../../../FirestoreService.dart';
@@ -127,4 +128,122 @@ Future firestoreSleep(DateTime _day, List<int> sleepTime, List<int> awakeTime, L
   int awake = awakeTime.reduce((a,b) => a+b);
   int inBed = inBedTime.reduce((a,b) => a+b);
   await FirestoreService(uid: uid).sleepFeatures(day, asleep, awake, inBed);
+}
+
+// GET MONTH DATA
+int uploadPercent = 0;
+bool uploading = false;
+bool uploaded = false;
+Future<void> gatherMonthData() async {
+  uploaded = true;
+  for (int i = 0; i < lastDayOfMonth.day + 1; i++) {
+    // current day to read => goes from beginning to end of month
+    DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
+    DateTime dayEnd = new DateTime(dayBegin.year, dayBegin.month, dayBegin.day, 23, 59, 59);
+
+
+    // data structures
+    List<HealthDataPoint> dataDay = [];
+    // heart
+    Map<int, List<int>> heartratesMap = {};
+    List<int> heartrates = [];
+    List<int> heartratesWalking = [];
+    List<int> heartratesResting = [];
+    // step
+    int totalSteps = 0;
+    int totalDistance = 0;
+    Map<int, List<int>> stepsMap = {};
+    Map<int, List<int>> distanceMap = {};
+    // activity
+    int energyBurned = 0;
+    int movementMins = 0;
+    Map<int, List<int>> energyBurnedMap = {};
+    Map<int, List<int>> moveMinsMap = {};
+    // sleep
+    List<int> sleepTime = [];
+    List<int> awakeTime = [];
+    List<int> inBedTime = [];
+
+
+    // READ data using healthkit
+    List<HealthDataPoint> healthDataDay = await health.getHealthDataFromTypes(dayBegin, dayEnd, types);
+    dataDay.addAll(healthDataDay);
+    // WRITE data into data structures
+    for (var i = 0; i < dataDay.length; i++) {
+      DateTime date = dataDay[i].dateTo;
+      int value = dataDay[i].value.floor();
+
+      // HEART
+      if (dataDay[i].type == HealthDataType.WALKING_HEART_RATE) heartratesWalking.add(value);
+      if (dataDay[i].type == HealthDataType.RESTING_HEART_RATE) heartratesResting.add(value);
+      if (dataDay[i].type == HealthDataType.HEART_RATE) {
+        heartrates.add(value);
+        if (!heartratesMap.containsKey(date.hour)) heartratesMap[date.hour] = [];
+        heartratesMap[date.hour] = heartratesMap[date.hour]..addAll([value]);
+      }
+
+      // STEP
+      if (dataDay[i].type == HealthDataType.STEPS) {
+        totalSteps += value;
+        if (!stepsMap.containsKey(date.hour)) stepsMap[date.hour] = [];
+        stepsMap[date.hour] = stepsMap[date.hour]..addAll([value]);
+      }
+      if (dataDay[i].type == HealthDataType.DISTANCE_DELTA) {
+        totalDistance += value;
+        if (!distanceMap.containsKey(date.hour)) distanceMap[date.hour] = [];
+        distanceMap[date.hour] = distanceMap[date.hour]..addAll([value]);
+      }
+
+      // ACTIVITY
+      if (dataDay[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
+        if (date != dayEnd) {
+          if (!energyBurnedMap.containsKey(date.hour)) energyBurnedMap[date.hour] = [];
+          else {
+            energyBurnedMap[date.hour] = energyBurnedMap[date.hour]..addAll([value]);
+            energyBurned += value;
+          }
+        }
+      }
+      if (dataDay[i].type == HealthDataType.MOVE_MINUTES) {
+        movementMins += value;
+        if (!moveMinsMap.containsKey(date.hour)) moveMinsMap[date.hour] = [];
+        moveMinsMap[date.hour] = moveMinsMap[date.hour]..addAll([value]);
+      }
+
+      // SLEEP
+      if (dataDay[i].type == HealthDataType.SLEEP_ASLEEP) sleepTime.add(value);
+      if (dataDay[i].type == HealthDataType.SLEEP_AWAKE) awakeTime.add(value);
+      if (dataDay[i].type == HealthDataType.SLEEP_IN_BED) inBedTime.add(value);
+    }
+
+
+    // add empty data structures (to avoid empty list errors)
+    // heart
+    if (heartrates.isEmpty) heartrates.add(0);
+    if (heartratesWalking.isEmpty) heartratesWalking.add(0);
+    if (heartratesResting.isEmpty) heartratesResting.add(0);
+    // sleep
+    if (sleepTime.isEmpty) sleepTime.add(0);
+    if (awakeTime.isEmpty) awakeTime.add(0);
+    if (inBedTime.isEmpty) inBedTime.add(0);
+
+
+    // save month's data into firestore
+    // heart
+    if (heartrates.reduce((a,b) => a+b) != 0)
+      await firestoreHeart(dayBegin, heartratesMap, heartrates, heartratesResting, heartratesWalking);
+    // step
+    if (totalSteps != 0 && totalDistance != 0)
+      await firestoreStep(dayBegin, totalSteps, totalDistance, stepsMap, distanceMap);
+    // activity
+    if (energyBurned != 0 && movementMins != 0)
+      await firestoreActivity(dayBegin, energyBurned, movementMins, energyBurnedMap, moveMinsMap);
+    // sleep
+    if (sleepTime.reduce((a,b) => a+b) != 0)
+      await firestoreSleep(dayBegin, sleepTime, awakeTime, inBedTime);
+
+
+    uploadPercent = ((i / (lastDayOfMonth.day + 1)) * 100).floor();
+    print("___________________\n$dayBegin - $dayEnd");
+  }
 }

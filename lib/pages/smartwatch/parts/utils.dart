@@ -130,13 +130,15 @@ Future firestoreSleep(DateTime _day, List<int> sleepTime, List<int> awakeTime, L
   await FirestoreService(uid: uid).sleepFeatures(day, asleep, awake, inBed);
 }
 
-// GET MONTH DATA
+// GET DATA - month and day
 int uploadPercent = 0;
 bool uploading = false;
 bool uploaded = false;
-Future<void> gatherMonthData() async {
+
+// MONTH
+Future<void> gatherData(int start, int end) async {
   uploaded = true;
-  for (int i = 0; i < lastDayOfMonth.day + 1; i++) {
+  for (int i = start; i < end; i++) {
     // current day to read => goes from beginning to end of month
     DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
     DateTime dayEnd = new DateTime(dayBegin.year, dayBegin.month, dayBegin.day, 23, 59, 59);
@@ -243,7 +245,6 @@ Future<void> gatherMonthData() async {
       await firestoreSleep(dayBegin, sleepTime, awakeTime, inBedTime);
 
 
-    uploadPercent = ((i / (lastDayOfMonth.day + 1)) * 100).floor();
     print("___________________\n$dayBegin - $dayEnd");
   }
 }

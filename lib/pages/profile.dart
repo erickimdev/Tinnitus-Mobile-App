@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tinnitus_app/main.dart';
 import 'calendar/utils.dart';
 import 'package:fit_kit/fit_kit.dart';
+import 'smartwatch/parts/utils.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -42,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   dailySubmitted = false;
                   calendarSynced = false;
                   kEvents.clear();
+                  uploaded = false;
                   Navigator.of(context).pop();
                 });
                 ScaffoldMessenger.of(context).showSnackBar(

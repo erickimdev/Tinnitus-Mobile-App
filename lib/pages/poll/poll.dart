@@ -56,7 +56,7 @@ class _PollPageState extends State<PollPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: new Text("Submit Answers?"),
-          content: new Text("This will overwrite any existing data for today."),
+          content: new Text("All answers submitted for today cannot be changed."),
           actions: <Widget>[
             new TextButton(
               child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
@@ -152,14 +152,14 @@ class _PollPageState extends State<PollPage> {
       return Center(
         child: Column(
           children: <Widget>[
-            SizedBox(height: 195.0),
+            SizedBox(height: 205.0),
             Icon(
               Icons.check_circle,
               color: Colors.white,
               size: 80,
             ),
 
-            SizedBox(height: 40.0),
+            SizedBox(height: 30.0),
             Text("Your answers have\nbeen recorded.",
               textAlign: TextAlign.center,
               style: TextStyle(

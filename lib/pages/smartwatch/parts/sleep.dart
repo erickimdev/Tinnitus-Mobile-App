@@ -112,24 +112,17 @@ class _SleepPageState extends State<SleepPage> {
         if (_timeAwakeMonth.isEmpty) _timeAwakeMonth.add(0);
         if (_timeInBedMonth.isEmpty) _timeInBedMonth.add(0);
 
-        // upload data to Firestore
-        await firestore();
-
       } catch (e) {}
     } else print("Authorization not granted");
     setState(() {});
-  }
-  Future firestore() async {
-    // FEATURES
-    int asleep = _sleepDay.reduce((a,b) => a+b);
-    int awake = _timeAwakeDay.reduce((a,b) => a+b);
-    int inBed = _timeInBedDay.reduce((a,b) => a+b);
-    await FirestoreService(uid: uid).sleepFeatures(day, asleep, awake, inBed);
   }
 
   @override
   void initState() {
     super.initState();
+
+    // upload data to Firestore
+    gatherData(day.day, day.day + 1);
 
     // instantiate types to read
     List<HealthDataType> types = [
@@ -398,10 +391,10 @@ class _SleepPageState extends State<SleepPage> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //   },
+      // ),
 
     );
   }

@@ -50,7 +50,7 @@ class _AddEventState extends State<AddEvent> {
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 10, 250, 0),
           child: Text(
-            'Question $qNum/2',
+            'QUESTION $qNum/2',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -61,8 +61,15 @@ class _AddEventState extends State<AddEvent> {
         ),
         Card(
           margin: EdgeInsets.fromLTRB(22.0, 11.0, 22.0, 23.0),
-          color: Colors.blue[500],
+          color: Colors.black12,
           elevation: 10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            side: BorderSide(
+              color: Colors.grey[400],
+              width: 1,
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 10.0),
             child: Column(
@@ -101,7 +108,7 @@ class _AddEventState extends State<AddEvent> {
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 10, 250, 0),
           child: Text(
-            'Question 2/2',
+            'QUESTION 2/2',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -112,8 +119,15 @@ class _AddEventState extends State<AddEvent> {
         ),
         Card(
           margin: EdgeInsets.fromLTRB(22.0, 11.0, 22.0, 23.0),
-          color: Colors.blue[500],
+          color: Colors.black12,
           elevation: 10,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            side: BorderSide(
+              color: Colors.grey[400],
+              width: 1,
+            ),
+          ),
           child: Column(
             children: [
               Padding(

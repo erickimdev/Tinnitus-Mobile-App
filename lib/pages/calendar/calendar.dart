@@ -261,7 +261,16 @@ class _CalendarPageState extends State<CalendarPage> {
                           ),
                           child: ListTile(
                             onTap: () => print('${value[index]}'),
-                            onLongPress: () {},
+                            onLongPress: () async {
+                              String date = DateFormat('MM-dd-yyyy').format(_selectedDay);
+                              String time = value[index].time;
+                              bool choice = await confirmDelete("${value[index]}", date, time);
+                              setState(() {
+                                if(choice) {
+                                  value.removeAt(index);
+                                }
+                              });
+                            },
                             contentPadding: EdgeInsets.fromLTRB(20, 0, 0, 0),
                             subtitle: Text(
                               "Recorded at ${value[index].time}",

@@ -141,43 +141,17 @@ class _ActivityPageState extends State<ActivityPage> {
           }
         });
 
-        // upload data to Firestore
-        await firestore();
-
       } catch (e) {}
     } else print("Authorization not granted");
     setState(() {});
-  }
-  Future firestore() async {
-    // FEATURES
-    int burned = _energyBurnedDay;
-    int MM = _moveMinsDay;
-    await FirestoreService(uid: uid).activityFeatures(day, burned, MM);
-
-    // HOURLY CALORIES BURNED
-    int accBurned = 0;
-    Map<String, int> hourlyBurned = {};
-    _mapCalories.forEach((k, v) {
-      String time = DateFormat('HH:mm').format(DateTime(day.year, day.month, day.day, k)).toString();
-      accBurned += v.reduce((a,b) => a+b);
-      hourlyBurned.addAll({time: accBurned});
-    });
-    await FirestoreService(uid: uid).hourlyCalories(day, hourlyBurned);
-
-    // HOURLY MOVEMENT MINUTES
-    int accMM = 0;
-    Map<String, int> hourlyMM = {};
-    _mapMM.forEach((k, v) {
-      String time = DateFormat('HH:mm').format(DateTime(day.year, day.month, day.day, k)).toString();
-      accMM += v.reduce((a,b) => a+b);
-      hourlyMM.addAll({time: accMM});
-    });
-    await FirestoreService(uid: uid).hourlyMovementMins(day, hourlyMM);
   }
 
   @override
   void initState() {
     super.initState();
+
+    // upload data to Firestore
+    gatherData(day.day, day.day + 1);
 
     // instantiate types to read
     List<HealthDataType> types = [
@@ -429,20 +403,20 @@ class _ActivityPageState extends State<ActivityPage> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // _graphDay.forEach((i) {
-          //   print("${i.date} - ${i.burned}");
-          // });
-          // print("\n\n");
-          // _graphWeekMap.forEach((key, value) {
-          //   print("$key - $value");
-          // });
-          _graphDay.forEach((i) {
-            print("${i.date} - ${i.burned}");
-          });
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     // _graphDay.forEach((i) {
+      //     //   print("${i.date} - ${i.burned}");
+      //     // });
+      //     // print("\n\n");
+      //     // _graphWeekMap.forEach((key, value) {
+      //     //   print("$key - $value");
+      //     // });
+      //     _graphDay.forEach((i) {
+      //       print("${i.date} - ${i.burned}");
+      //     });
+      //   },
+      // ),
 
     );
   }

@@ -49,64 +49,67 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
   void askPermissions() async {
     activityPermission = await Permission.activityRecognition.request();
     bool healthPermissionsGranted = await health.requestAuthorization(types);
-    if (healthPermissionsGranted && !uploaded) gatherMonthData();
+    if (healthPermissionsGranted) {
+      if (!uploaded) gatherData(0, lastDayOfMonth.day + 1);
+      else gatherData(day.day, day.day + 1);
+    }
   }
 
-  Widget uploadButton() {
-    if (!uploading) {
-      return TextButton.icon(
-        icon: Icon(Icons.upload),
-        label: Text("Upload Month's Data", style: TextStyle(fontSize: 17),),
-        onPressed: () async {
-          bool confirm = await confirmUpload();
-          if (confirm) {
-            setState(() { uploading = true; });
-            bool healthPermissionsGranted = await health.requestAuthorization(types);
-            if (healthPermissionsGranted) await gatherMonthData();
-          }
-        }
-      );
-    }
-    else {
-      return Column(
-        children: [
-          SizedBox(height: 15),
-          Text(
-            "Uploading... $uploadPercent%",
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.blue,
-            ),
-          ),
-        ],
-      );
-    }
-  }
-  Future<bool> confirmUpload() async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Upload this month's data?"),
-          content: new Text("Please wait until loading is finished before exiting the app."),
-          actions: <Widget>[
-            new TextButton(
-              child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            new TextButton(
-              child: new Text("UPLOAD", style: TextStyle(fontSize: 15,),),
-              onPressed: () async {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Widget uploadButton() {
+  //   if (!uploading) {
+  //     return TextButton.icon(
+  //       icon: Icon(Icons.upload),
+  //       label: Text("Upload Month's Data", style: TextStyle(fontSize: 17),),
+  //       onPressed: () async {
+  //         bool confirm = await confirmUpload();
+  //         if (confirm) {
+  //           setState(() { uploading = true; });
+  //           bool healthPermissionsGranted = await health.requestAuthorization(types);
+  //           if (healthPermissionsGranted) await gatherMonthData();
+  //         }
+  //       }
+  //     );
+  //   }
+  //   else {
+  //     return Column(
+  //       children: [
+  //         SizedBox(height: 15),
+  //         Text(
+  //           "Uploading... $uploadPercent%",
+  //           style: TextStyle(
+  //             fontSize: 18,
+  //             color: Colors.blue,
+  //           ),
+  //         ),
+  //       ],
+  //     );
+  //   }
+  // }
+  // Future<bool> confirmUpload() async {
+  //   return await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: new Text("Upload this month's data?"),
+  //         content: new Text("Please wait until loading is finished before exiting the app."),
+  //         actions: <Widget>[
+  //           new TextButton(
+  //             child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
+  //             onPressed: () {
+  //               Navigator.of(context).pop(false);
+  //             },
+  //           ),
+  //           new TextButton(
+  //             child: new Text("UPLOAD", style: TextStyle(fontSize: 15,),),
+  //             onPressed: () async {
+  //               Navigator.of(context).pop(true);
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   void initState() {
@@ -176,7 +179,13 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
         // floatingActionButton: FloatingActionButton(
         //   backgroundColor: Colors.red,
         //   onPressed: () {
-        //     Navigator.pushNamed(context, "/test");
+        //     int um = day.day;
+        //     for (int i = um; i < um+1; i++) {
+        //       // current day to read => goes from beginning to end of month
+        //       DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
+        //       DateTime dayEnd = new DateTime(dayBegin.year, dayBegin.month, dayBegin.day, 23, 59, 59);
+        //       print("$dayBegin - $dayEnd");
+        //     }
         //   },
         //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
         // ),

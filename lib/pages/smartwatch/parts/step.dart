@@ -129,43 +129,17 @@ class _StepsPageState extends State<StepsPage> {
           }
         });
 
-        // upload data to Firestore
-        await firestore();
-
       } catch (e) {}
     } else print("Authorization not granted");
     setState(() {});
-  }
-  Future firestore() async {
-    // FEATURES
-    int steps = _stepsDay;
-    int distance = _distanceDay;
-    await FirestoreService(uid: uid).stepFeatures(day, steps, distance);
-
-    // HOURLY STEP RATE
-    int accSteps = 0;
-    Map<String, int> hourlySteps = {};
-    _mapDay.forEach((k, v) {
-      String time = DateFormat('HH:mm').format(DateTime(day.year, day.month, day.day, k)).toString();
-      accSteps += v.reduce((a,b) => a+b);
-      hourlySteps.addAll({time: accSteps});
-    });
-    await FirestoreService(uid: uid).hourlySteps(day, hourlySteps);
-
-    // HOURLY DISTANCE
-    int accDistance = 0;
-    Map<String, int> hourlyDistance = {};
-    _mapDistance.forEach((k, v) {
-      String time = DateFormat('HH:mm').format(DateTime(day.year, day.month, day.day, k)).toString();
-      accDistance += v.reduce((a,b) => a+b);
-      hourlyDistance.addAll({time: accDistance});
-    });
-    await FirestoreService(uid: uid).hourlyDistance(day, hourlyDistance);
   }
 
   @override
   void initState() {
     super.initState();
+
+    // upload data to Firestore
+    gatherData(day.day, day.day + 1);
 
     // instantiate types to read
     List<HealthDataType> types = [
@@ -417,13 +391,13 @@ class _StepsPageState extends State<StepsPage> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _mapDistance.forEach((key, value) {
-            print("$key - $value");
-          });
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     _mapDistance.forEach((key, value) {
+      //       print("$key - $value");
+      //     });
+      //   },
+      // ),
 
     );
   }

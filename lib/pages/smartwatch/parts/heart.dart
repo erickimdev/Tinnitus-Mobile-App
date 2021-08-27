@@ -152,35 +152,17 @@ class _HeartPageState extends State<HeartPage> {
         if (_restHRsMonth.isEmpty) _restHRsMonth.add(0);
         if (_walkHRsMonth.isEmpty) _walkHRsMonth.add(0);
 
-        // upload data to Firestore
-        await firestore();
-
       } catch (e) {}
     } else print("Authorization not granted");
     setState(() {});
-  }
-  Future firestore() async {
-    // FEATURES
-    int avgHR = _HRsDay.reduce((a,b) => a+b).toDouble() ~/ _HRsDay.length;
-    int avgRestingHR = _restHRsDay.reduce((a,b) => a+b).toDouble() ~/ _restHRsDay.length;
-    int avgWalkingHR = _walkHRsDay.reduce((a,b) => a+b).toDouble() ~/ _walkHRsDay.length;
-    int maxHR = _HRsDay.reduce(max);
-    int minHR = _HRsDay.reduce(min);
-    await FirestoreService(uid: uid).heartFeatures(day, avgHR, avgRestingHR, avgWalkingHR, maxHR, minHR);
-
-    // HOURLY HEART RATE
-    Map<String, int> hourlyHRs = {};
-    _mapDay.forEach((k, v) {
-      String time = DateFormat('HH:mm').format(DateTime(day.year, day.month, day.day, k)).toString();
-      int avg = v.reduce((a,b) => a+b).toDouble() ~/ v.length;
-      hourlyHRs.addAll({time: avg});
-    });
-    await FirestoreService(uid: uid).hourlyHeartRate(day, hourlyHRs);
   }
 
   @override
   void initState() {
     super.initState();
+
+    // upload data to Firestore
+    gatherData(day.day, day.day + 1);
 
     // instantiate types to read
     List<HealthDataType> types = [
@@ -455,10 +437,10 @@ class _HeartPageState extends State<HeartPage> {
         ),
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //   },
+      // ),
 
     );
   }

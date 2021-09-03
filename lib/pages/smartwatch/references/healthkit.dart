@@ -103,13 +103,13 @@ class _HealthKitPageState extends State<HealthKitPage> {
           child: _content(),
         ),
 
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () {
-            _healthDataList.forEach((i) {print("i: $i");});
-          },
-          child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   backgroundColor: Colors.red,
+        //   onPressed: () {
+        //     _healthDataList.forEach((i) {print("i: $i");});
+        //   },
+        //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
+        // ),
 
       ),
     );

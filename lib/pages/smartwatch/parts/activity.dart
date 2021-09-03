@@ -34,10 +34,6 @@ class _ActivityPageState extends State<ActivityPage> {
   int _energyBurnedMonth = 0;
   int _moveMinsMonth = 0;
 
-  // map calories & move mins for Firstore
-  Map<int, List<int>> _mapCalories = {};
-  Map<int, List<int>> _mapMM = {};
-
   // graph data structures
   List<EnergyBurned> _graphDay = [];
   List<EnergyBurned> _graphWeek = [];
@@ -64,19 +60,11 @@ class _ActivityPageState extends State<ActivityPage> {
           DateTime date = _allDataDay[i].dateTo;
           int value = _allDataDay[i].value.floor();
 
-          if (_allDataDay[i].type == HealthDataType.MOVE_MINUTES) {
-            _moveMinsDay += value;
-            if (!_mapMM.containsKey(date.hour)) _mapMM[date.hour] = [];
-            _mapMM[date.hour] = _mapMM[date.hour]..addAll([value]);
-          }
+          if (_allDataDay[i].type == HealthDataType.MOVE_MINUTES) _moveMinsDay += value;
           if (_allDataDay[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            if (date != dayEnd) {
-              if (!_mapCalories.containsKey(date.hour)) _mapCalories[date.hour] = [];
-              else {
-                _mapCalories[date.hour] = _mapCalories[date.hour]..addAll([value]);
-                _graphDay.add(new EnergyBurned(date, _energyBurnedDay));
-                _energyBurnedDay += value;
-              }
+            if ((_allDataDay[i].value - _allDataDay[i].value.floor()).abs() == 0) {
+              _energyBurnedDay += value;
+              _graphDay.add(new EnergyBurned(date, _energyBurnedDay));
             }
           }
         }
@@ -90,12 +78,10 @@ class _ActivityPageState extends State<ActivityPage> {
 
           if (_allDataWeek[i].type == HealthDataType.MOVE_MINUTES) _moveMinsWeek += value;
           if (_allDataWeek[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            if (date != lastDayOfWeek) {
+            if ((_allDataWeek[i].value - _allDataWeek[i].value.floor()).abs() == 0) {
               if (!_graphWeekMap.containsKey(date.day)) _graphWeekMap[date.day] = [];
-              else {
-                _graphWeekMap[date.day] = _graphWeekMap[date.day]..addAll([value]);
-                _energyBurnedWeek += value;
-              }
+              _graphWeekMap[date.day] = _graphWeekMap[date.day]..addAll([value]);
+              _energyBurnedWeek += value;
             }
           }
         }
@@ -109,12 +95,10 @@ class _ActivityPageState extends State<ActivityPage> {
 
           if (_allDataMonth[i].type == HealthDataType.MOVE_MINUTES) _moveMinsMonth += value;
           if (_allDataMonth[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-            if (date != lastDayOfMonth) {
+            if ((_allDataMonth[i].value - _allDataMonth[i].value.floor()).abs() == 0) {
               if (!_graphMonthMap.containsKey(date.day)) _graphMonthMap[date.day] = [];
-              else {
-                _graphMonthMap[date.day] = _graphMonthMap[date.day]..addAll([value]);
-                _energyBurnedMonth += value;
-              }
+              _graphMonthMap[date.day] = _graphMonthMap[date.day]..addAll([value]);
+              _energyBurnedMonth += value;
             }
           }
         }
@@ -128,7 +112,7 @@ class _ActivityPageState extends State<ActivityPage> {
             if (value.isNotEmpty) {
               DateTime date = new DateTime(temp.year, temp.month, temp.day);
               int sum = value.reduce((a, b) => a + b);
-              if (sum < 4000) _graphWeek.add(new EnergyBurned(date, sum));
+              _graphWeek.add(new EnergyBurned(date, sum));
             }
           }
         }
@@ -137,7 +121,7 @@ class _ActivityPageState extends State<ActivityPage> {
           if (v.isNotEmpty) {
             DateTime date = new DateTime(firstDayOfMonth.year, firstDayOfMonth.month, k);
             int sum = v.reduce((a, b) => a + b);
-            if (sum < 4000) _graphMonth.add(new EnergyBurned(date, sum));
+            _graphMonth.add(new EnergyBurned(date, sum));
           }
         });
 
@@ -405,16 +389,28 @@ class _ActivityPageState extends State<ActivityPage> {
 
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {
-      //     // _graphDay.forEach((i) {
-      //     //   print("${i.date} - ${i.burned}");
-      //     // });
-      //     // print("\n\n");
-      //     // _graphWeekMap.forEach((key, value) {
-      //     //   print("$key - $value");
-      //     // });
-      //     _graphDay.forEach((i) {
-      //       print("${i.date} - ${i.burned}");
+      //
+      //     _allDataDay.forEach((i) {
+      //       if (i.type == HealthDataType.ACTIVE_ENERGY_BURNED) {
+      //         print("${i.dateFrom} - ${i.dateTo} => ${i.value}");
+      //       }
       //     });
+      //     print("\n\n\n");
+      //     _allDataWeek.forEach((i) {
+      //       if (i.type == HealthDataType.ACTIVE_ENERGY_BURNED) {
+      //         if ((i.value - i.value.floor()).abs() == 0) print("${i.dateFrom} - ${i.dateTo} => ${i.value}");
+      //       }
+      //     });
+      //
+      //
+      //
+      //     // _mapCalories.forEach((key, value) {
+      //     //   print("_mapCalories => $key - $value");
+      //     // });
+      //     // _graphWeekMap.forEach((key, value) {
+      //     //   print("_graphWeekMap => $key - $value");
+      //     // });
+      //
       //   },
       // ),
 

@@ -137,13 +137,13 @@ class _FitKitPageState extends State<FitKitPage> {
           ),
         ),
 
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red,
-          onPressed: () {
-            print("items: $items");
-          },
-          child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   backgroundColor: Colors.red,
+        //   onPressed: () {
+        //     print("items: $items");
+        //   },
+        //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
+        // ),
 
       ),
     );

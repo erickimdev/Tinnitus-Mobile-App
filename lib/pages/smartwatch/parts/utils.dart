@@ -5,11 +5,12 @@ import '../../../FirestoreService.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
 import '../../../main.dart';
+import '../smartwatch.dart';
 
 HealthFactory health = HealthFactory();
 
 // "current" date to read data
-// DateTime d = DateTime(2021, 8, 18);
+// DateTime d = DateTime(2021, 9, 2);
 DateTime d = DateTime.now();
 DateTime day = DateTime(d.year, d.month, d.day);
 
@@ -131,13 +132,11 @@ Future firestoreSleep(DateTime _day, List<int> sleepTime, List<int> awakeTime, L
 }
 
 // GET DATA - month and day
-int uploadPercent = 0;
-bool uploading = false;
 bool uploaded = false;
 
-// MONTH
 Future<void> gatherData(int start, int end) async {
   uploaded = true;
+  uploading = true;
   for (int i = start; i < end; i++) {
     // current day to read => goes from beginning to end of month
     DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
@@ -198,12 +197,10 @@ Future<void> gatherData(int start, int end) async {
 
       // ACTIVITY
       if (dataDay[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-        if (date != dayEnd) {
+        if ((dataDay[i].value - dataDay[i].value.floor()).abs() == 0) {
           if (!energyBurnedMap.containsKey(date.hour)) energyBurnedMap[date.hour] = [];
-          else {
-            energyBurnedMap[date.hour] = energyBurnedMap[date.hour]..addAll([value]);
-            energyBurned += value;
-          }
+          energyBurnedMap[date.hour] = energyBurnedMap[date.hour]..addAll([value]);
+          energyBurned += value;
         }
       }
       if (dataDay[i].type == HealthDataType.MOVE_MINUTES) {
@@ -244,7 +241,9 @@ Future<void> gatherData(int start, int end) async {
     if (sleepTime.reduce((a,b) => a+b) != 0)
       await firestoreSleep(dayBegin, sleepTime, awakeTime, inBedTime);
 
-
+    uploadPercent += 1;
     print("___________________\n$dayBegin - $dayEnd");
   }
+  uploading = false;
+  uploadPercent = 0;
 }

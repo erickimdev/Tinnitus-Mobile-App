@@ -232,29 +232,29 @@ class _SleepPageState extends State<SleepPage> {
 
     if (_daySelected) {
       return Column(children: [
-        metrics("Time Asleep:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _sleepDay.reduce((a,b) => a+b)),
+        metrics("Time Asleep:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _sleepDay.reduce((a,b) => a+b)),
         SizedBox(height: 10),
-        metrics("Time Awake:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _awakeDay.floor()),
+        metrics("Time Awake:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _awakeDay.floor()),
         SizedBox(height: 10),
-        metrics("Time in Bed:", EdgeInsets.fromLTRB(25, 0, 12, 2.5), _inBedDay.floor()),
+        metrics("Time in Bed:", EdgeInsets.fromLTRB(19, 0, 12, 2.5), _inBedDay.floor()),
       ],);
     }
     else if (_weekSelected) {
       return Column(children: [
-        metrics("Time Asleep:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _sleepWeek.reduce((a,b) => a+b)),
+        metrics("Time Asleep:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _sleepWeek.reduce((a,b) => a+b)),
         SizedBox(height: 10),
-        metrics("Time Awake:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _awakeWeek.floor()),
+        metrics("Time Awake:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _awakeWeek.floor()),
         SizedBox(height: 10),
-        metrics("Time in Bed:", EdgeInsets.fromLTRB(25, 0, 12, 2.5), _inBedWeek.floor()),
+        metrics("Time in Bed:", EdgeInsets.fromLTRB(19, 0, 12, 2.5), _inBedWeek.floor()),
       ],);
     }
     else if (_monthSelected) {
       return Column(children: [
-        metrics("Time Asleep:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _sleepMonth.reduce((a,b) => a+b)),
+        metrics("Time Asleep:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _sleepMonth.reduce((a,b) => a+b)),
         SizedBox(height: 10),
-        metrics("Time Awake:", EdgeInsets.fromLTRB(25, 0, 10, 2.5), _awakeMonth.floor()),
+        metrics("Time Awake:", EdgeInsets.fromLTRB(19, 0, 10, 2.5), _awakeMonth.floor()),
         SizedBox(height: 10),
-        metrics("Time in Bed:", EdgeInsets.fromLTRB(25, 0, 12, 2.5), _inBedMonth.floor()),
+        metrics("Time in Bed:", EdgeInsets.fromLTRB(19, 0, 12, 2.5), _inBedMonth.floor()),
       ],);
     }
     return Text("Error");

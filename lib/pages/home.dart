@@ -116,13 +116,14 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   child: Text("LOGIN"),
-      //   onPressed: () async {
-      //     user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
-      //     loggedIn = true;
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        child: Text("LOGIN"),
+        onPressed: () async {
+          user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
+          loggedIn = true;
+          print("logged in");
+        },
+      ),
 
     );
   }

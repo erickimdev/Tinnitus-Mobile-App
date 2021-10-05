@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'utils.dart';
+import '../utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tinnitus_app/main.dart';
 import '../../../FirestoreService.dart';
@@ -54,7 +54,6 @@ class _HeartPageState extends State<HeartPage> {
   Future getHeartData(List<HealthDataType> types) async {
     setState(() {return CircularProgressIndicator;});
 
-    bool healthPermissionsGranted = await health.requestAuthorization(types);
     if (healthPermissionsGranted) {
       try {
 

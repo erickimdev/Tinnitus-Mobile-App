@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'utils.dart';
+import '../utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tinnitus_app/main.dart';
 import '../../../FirestoreService.dart';
@@ -49,7 +49,6 @@ class _ActivityPageState extends State<ActivityPage> {
   Future getActivityData(List<HealthDataType> types) async {
     setState(() {return CircularProgressIndicator;});
 
-    bool healthPermissionsGranted = await health.requestAuthorization(types);
     if (healthPermissionsGranted) {
       try {
 

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tinnitus_app/main.dart';
-import 'package:health/health.dart';
-import 'parts/utils.dart';
+import 'utils.dart';
 
 class SmartwatchPage extends StatefulWidget {
   @override
@@ -49,8 +48,6 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     );
   }
   void askPermissions() async {
-    activityPermission = await Permission.activityRecognition.request();
-    bool healthPermissionsGranted = await health.requestAuthorization(types);
     if (healthPermissionsGranted) {
       setState(() {
         uploading = true;
@@ -69,7 +66,6 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
           bool confirm = await confirmUpload();
           if (confirm) {
             setState(() { uploading = true; });
-            bool healthPermissionsGranted = await health.requestAuthorization(types);
             if (healthPermissionsGranted) await gatherData(0, lastDayOfMonth.day + 1);
           }
         }

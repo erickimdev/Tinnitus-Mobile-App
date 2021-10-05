@@ -18,6 +18,7 @@ bool loggedIn = false;
 bool dailySubmitted = false;
 bool calendarSynced = false;
 var activityPermission;
+var healthPermissionsGranted;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tinnitus_app/main.dart';
 import 'calendar/utils.dart';
 import 'package:fit_kit/fit_kit.dart';
-import 'smartwatch/parts/utils.dart';
+import 'smartwatch/utils.dart';
+import 'package:health/health.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -187,7 +189,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
 
                 if (user != null) {
-                  setState(() {
+                  setState(() async {
+                    // get permissions
+                    activityPermission = await Permission.activityRecognition.request();
+                    healthPermissionsGranted = await health.requestAuthorization(types);
+
                     LR_appbar = "Logout";
                     loggedIn = true;
                     ScaffoldMessenger.of(context).showSnackBar(

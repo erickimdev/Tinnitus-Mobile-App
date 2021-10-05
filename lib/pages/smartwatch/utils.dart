@@ -1,17 +1,17 @@
 import 'package:charts_flutter/flutter.dart';
 import 'package:health/health.dart';
 import 'package:tinnitus_app/pages/smartwatch/parts/step.dart';
-import '../../../FirestoreService.dart';
+import '../../FirestoreService.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
-import '../../../main.dart';
-import '../smartwatch.dart';
+import '../../main.dart';
+import 'smartwatch.dart';
 
 HealthFactory health = HealthFactory();
 
 // "current" date to read data
-// DateTime d = DateTime(2021, 9, 2);
-DateTime d = DateTime.now();
+DateTime d = DateTime(2021, 9, 8);
+// DateTime d = DateTime.now();
 DateTime day = DateTime(d.year, d.month, d.day);
 
 // time units for what range of data to read

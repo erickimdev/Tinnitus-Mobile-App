@@ -112,7 +112,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
   @override
   void initState() {
     super.initState();
-    askPermissions();
+    // askPermissions();
   }
 
   @override
@@ -132,6 +132,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // big watch icon
               SizedBox(height: 50.0),
               Icon(
                 Icons.watch,
@@ -139,6 +140,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
                 size: 100,
               ),
 
+              // "Choose a metric."
               SizedBox(height: 60.0),
               Text(
                 "Choose a metric.",
@@ -149,6 +151,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
                 ),
               ),
 
+              // 4 buttons
               SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -177,13 +180,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
         // floatingActionButton: FloatingActionButton(
         //   backgroundColor: Colors.red,
         //   onPressed: () {
-        //     int um = day.day;
-        //     for (int i = um; i < um+1; i++) {
-        //       // current day to read => goes from beginning to end of month
-        //       DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
-        //       DateTime dayEnd = new DateTime(dayBegin.year, dayBegin.month, dayBegin.day, 23, 59, 59);
-        //       print("$dayBegin - $dayEnd");
-        //     }
+        //     Navigator.pushNamed(context, "/test");
         //   },
         //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
         // ),

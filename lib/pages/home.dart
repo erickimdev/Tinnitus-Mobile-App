@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tinnitus_app/main.dart';
-
+import 'package:tinnitus_app/pages/smartwatch/utils.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:fit_kit/fit_kit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
@@ -61,8 +63,11 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             splashRadius: 20,
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
+            onPressed: () async {
+              // Navigator.pushNamed(context, '/profile');
+              FitKit.revokePermissions();
+              activityPermission = await Permission.activityRecognition.request();
+              healthPermissionsGranted = await health.requestAuthorization(types);
             },
             icon: Icon(
               Icons.account_circle,
@@ -116,14 +121,16 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
 
-      // floatingActionButton: FloatingActionButton(
-      //   child: Text("LOGIN"),
-      //   onPressed: () async {
-      //     user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
-      //     loggedIn = true;
-      //     print("logged in");
-      //   },
-      // ),
+      floatingActionButton: FloatingActionButton(
+        child: Text("LOGIN"),
+        onPressed: () async {
+          user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
+          loggedIn = true;
+          print("logged in");
+          await Future.delayed(Duration(seconds: 1));
+          print(health);
+        },
+      ),
 
     );
   }

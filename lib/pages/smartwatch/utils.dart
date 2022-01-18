@@ -10,17 +10,33 @@ import 'smartwatch.dart';
 HealthFactory health = HealthFactory();
 
 // "current" date to read data
-DateTime d = DateTime(2021, 9, 8);
-// DateTime d = DateTime.now();
-DateTime day = DateTime(d.year, d.month, d.day);
+  DateTime d = DateTime(2021, 9, 15);
+  // DateTime d = DateTime.now();
+  DateTime day = DateTime(d.year, d.month, d.day);
 
 // time units for what range of data to read
-DateTime dayBegin = new DateTime(day.year, day.month, day.day);
-DateTime dayEnd = new DateTime(day.year, day.month, day.day, 23, 59, 59);
-DateTime firstDayOfWeek = day.subtract(Duration(days: day.weekday % 7));
-DateTime lastDayOfWeek = day.subtract(Duration(days: day.weekday % 7)).add(Duration(days: 7)).subtract(Duration(minutes: 1));
-DateTime firstDayOfMonth = new DateTime(day.year, day.month, 1);
-DateTime lastDayOfMonth = new DateTime(day.year, day.month, DateTime(day.year, day.month + 1, 0).day, 23, 59, 59);
+  DateTime dayBegin = new DateTime(day.year, day.month, day.day);
+  DateTime dayEnd = new DateTime(day.year, day.month, day.day, 23, 59, 59);
+  DateTime firstDayOfWeek = day.subtract(Duration(days: day.weekday % 7));
+  DateTime lastDayOfWeek = day.subtract(Duration(days: day.weekday % 7)).add(Duration(days: 7)).subtract(Duration(minutes: 1));
+  DateTime firstDayOfMonth = new DateTime(day.year, day.month, 1);
+  DateTime lastDayOfMonth = new DateTime(day.year, day.month, DateTime(day.year, day.month + 1, 0).day, 23, 59, 59);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // FIRESTORE
 String uid = user.email;
@@ -133,7 +149,6 @@ Future firestoreSleep(DateTime _day, List<int> sleepTime, List<int> awakeTime, L
 
 // GET DATA - month and day
 bool uploaded = false;
-
 Future<void> gatherData(int start, int end) async {
   uploaded = true;
   uploading = true;

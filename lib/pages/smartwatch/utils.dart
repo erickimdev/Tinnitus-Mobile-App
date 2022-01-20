@@ -1,17 +1,15 @@
-import 'package:charts_flutter/flutter.dart';
 import 'package:health/health.dart';
-import 'package:tinnitus_app/pages/smartwatch/parts/step.dart';
-import '../../FirestoreService.dart';
-import 'dart:math';
-import 'package:intl/intl.dart';
-import '../../main.dart';
-import 'smartwatch.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:oauth2_client/oauth2_helper.dart';
+import 'package:oauth2_client/google_oauth2_client.dart';
+import 'package:flutter_appauth/flutter_appauth.dart';
 
 HealthFactory health = HealthFactory();
 
 // "current" date to read data
-  DateTime d = DateTime(2021, 9, 15);
-  // DateTime d = DateTime.now();
+//   DateTime d = DateTime(2022, 1, 18);
+  DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
 // time units for what range of data to read
@@ -22,243 +20,166 @@ HealthFactory health = HealthFactory();
   DateTime firstDayOfMonth = new DateTime(day.year, day.month, 1);
   DateTime lastDayOfMonth = new DateTime(day.year, day.month, DateTime(day.year, day.month + 1, 0).day, 23, 59, 59);
 
+//region Oauth2 configuration
+  String codeVerifier;
+  String authorizationCode;
+  String accessToken;
+
+  var flutterWebViewPlugin = FlutterWebviewPlugin();
+  FlutterAppAuth appAuth = FlutterAppAuth();
+  String clientId = '394465226852-gu85ptes9hdhtqk2i9oacs87tap58va9.apps.googleusercontent.com';
+  String kAndroidUserAgent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
+  String redirectUrl = 'http://127.0.0.1:8181';
+  String discoveryUrl = 'https://www.googleapis.com/oauth2/v1/certs';
+
+  AuthorizationServiceConfiguration serviceConfiguration = const AuthorizationServiceConfiguration(
+      'https://accounts.google.com/o/oauth2/v2/auth',
+      'https://oauth2.googleapis.com/token'
+  );
+
+  List<String> scopes = <String>[
+    'https://www.googleapis.com/auth/fitness.activity.read',
+    'https://www.googleapis.com/auth/fitness.sleep.read',
+    'https://www.googleapis.com/auth/fitness.heart_rate.read',
+    'https://www.googleapis.com/auth/fitness.location.read'
+  ];
+
+  OAuth2Helper hlp = OAuth2Helper(GoogleOAuth2Client(
+      redirectUri: 'http://127.0.0.1:8181',
+      customUriScheme: 'my.test.app'),
+      clientId: '394465226852-gu85ptes9hdhtqk2i9oacs87tap58va9.apps.googleusercontent.com'
+  );
+//endregion
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// FIRESTORE
-String uid = user.email;
-List<HealthDataType> types = [
-    // HEART
-  HealthDataType.HEART_RATE,
-  // HealthDataType.RESTING_HEART_RATE,   // NOT AVAILABLE ON ANDROID
-  // HealthDataType.WALKING_HEART_RATE,   // NOT AVAILABLE ON ANDROID
-
-    // STEP
-  HealthDataType.STEPS,
-  HealthDataType.DISTANCE_DELTA,
-
-    // ACTIVITY
-  HealthDataType.ACTIVE_ENERGY_BURNED,
-  HealthDataType.MOVE_MINUTES,
-
-    // SLEEP
-  // HealthDataType.SLEEP_ASLEEP,     // NOT AVAILABLE ON ANDROID
-  // HealthDataType.SLEEP_AWAKE,      // NOT AVAILABLE ON ANDROID
-  // HealthDataType.SLEEP_IN_BED,     // NOT AVAILABLE ON ANDROID
-];
-
-// FIRESTORE HEART
-Future firestoreHeart(DateTime _day, Map<int, List<int>> heartratesMap, List<int> heartrates,List<int> heartratesResting, List<int> heartratesWalking) async {
-  // FEATURES
-  int avgHR = heartrates.reduce((a,b) => a+b).toDouble() ~/ heartrates.length;
-  int avgRestingHR = heartratesResting.reduce((a,b) => a+b).toDouble() ~/ heartratesResting.length;
-  int avgWalkingHR = heartratesWalking.reduce((a,b) => a+b).toDouble() ~/ heartratesWalking.length;
-  int maxHR = heartrates.reduce(max);
-  int minHR = heartrates.reduce(min);
-  await FirestoreService(uid: uid).heartFeatures(_day, avgHR, avgRestingHR, avgWalkingHR, maxHR, minHR);
-
-  // HOURLY HEART RATE
-  Map<String, int> hourlyHRs = {};
-  heartratesMap.forEach((k, v) {
-    String time = DateFormat('HH:mm').format(DateTime(_day.year, _day.month, _day.day, k)).toString();
-    int avg = v.reduce((a,b) => a+b).toDouble() ~/ v.length;
-    hourlyHRs.addAll({time: avg});
-  });
-  await FirestoreService(uid: uid).hourlyHeartRate(_day, hourlyHRs);
+// 0=awake 1=light 2=deep 3=rem   OR   1=awake 2=sleep 3=outofbed 4=light 5=deep 6=rem
+charts.Color type2BarColor(int type) {
+  if (type == 0) return charts.MaterialPalette.yellow.shadeDefault;
+  else if (type == 1) return charts.MaterialPalette.cyan.shadeDefault;
+  else if (type == 2) return charts.MaterialPalette.purple.shadeDefault;
+  else if (type == 3) return charts.MaterialPalette.green.shadeDefault;
+  return charts.MaterialPalette.gray.shadeDefault;
+}
+String type2String(int type) {
+  if (type == 1) return "awake";
+  else if (type == 2) return "sleep";
+  else if (type == 3) return "out-of-bed";
+  else if (type == 4) return "light sleep";
+  else if (type == 5) return "deep sleep";
+  else if (type == 6) return "rem sleep";
+  return "no such type";
 }
 
-// FIRESTORE STEP
-Future firestoreStep(DateTime _day, int totalSteps, int totalDistance, Map<int, List<int>> stepsMap, Map<int, List<int>> distanceMap) async {
-  // FEATURES
-  int steps = totalSteps;
-  int distance = totalDistance;
-  await FirestoreService(uid: uid).stepFeatures(_day, steps, distance);
 
-  // HOURLY STEP RATE
-  int accSteps = 0;
-  Map<String, int> hourlySteps = {};
-  stepsMap.forEach((k, v) {
-    String time = DateFormat('HH:mm').format(DateTime(_day.year, _day.month, _day.day, k)).toString();
-    accSteps += v.reduce((a,b) => a+b);
-    hourlySteps.addAll({time: accSteps});
-  });
-  await FirestoreService(uid: uid).hourlySteps(_day, hourlySteps);
-
-  // HOURLY DISTANCE
-  int accDistance = 0;
-  Map<String, int> hourlyDistance = {};
-  distanceMap.forEach((k, v) {
-    String time = DateFormat('HH:mm').format(DateTime(_day.year, _day.month, _day.day, k)).toString();
-    accDistance += v.reduce((a,b) => a+b);
-    hourlyDistance.addAll({time: accDistance});
-  });
-  await FirestoreService(uid: uid).hourlyDistance(_day, hourlyDistance);
+class GraphData {
+  final DateTime day;
+  final int value;
+  GraphData(this.day, this.value);
 }
 
-// FIRESTORE ACTIVITY
-Future firestoreActivity(DateTime _day, int energyBurned, int movementMins, Map<int, List<int>> energyBurnedMap, Map<int, List<int>> moveMinsMap) async {
-  // FEATURES
-  int burned = energyBurned;
-  int MM = movementMins;
-  await FirestoreService(uid: uid).activityFeatures(_day, burned, MM);
-
-  // HOURLY CALORIES BURNED
-  int accBurned = 0;
-  Map<String, int> hourlyBurned = {};
-  energyBurnedMap.forEach((k, v) {
-    if (v.isNotEmpty) {
-      String time = DateFormat('HH:mm').format(DateTime(_day.year, _day.month, _day.day, k)).toString();
-      accBurned += v.reduce((a,b) => a+b);
-      hourlyBurned.addAll({time: accBurned});
-    }
-  });
-  await FirestoreService(uid: uid).hourlyCalories(_day, hourlyBurned);
-
-  // HOURLY MOVEMENT MINUTES
-  int accMM = 0;
-  Map<String, int> hourlyMM = {};
-  moveMinsMap.forEach((k, v) {
-    String time = DateFormat('HH:mm').format(DateTime(_day.year, _day.month, _day.day, k)).toString();
-    accMM += v.reduce((a,b) => a+b);
-    hourlyMM.addAll({time: accMM});
-  });
-  await FirestoreService(uid: uid).hourlyMovementMins(_day, hourlyMM);
-}
-
-// FIRESTORE SLEEP
-Future firestoreSleep(DateTime _day, List<int> sleepTime, List<int> awakeTime, List<int> inBedTime) async {
-  // FEATURES
-  int asleep = sleepTime.reduce((a,b) => a+b);
-  int awake = awakeTime.reduce((a,b) => a+b);
-  int inBed = inBedTime.reduce((a,b) => a+b);
-  await FirestoreService(uid: uid).sleepFeatures(day, asleep, awake, inBed);
-}
-
-// GET DATA - month and day
-bool uploaded = false;
-Future<void> gatherData(int start, int end) async {
-  uploaded = true;
-  uploading = true;
-  for (int i = start; i < end; i++) {
-    // current day to read => goes from beginning to end of month
-    DateTime dayBegin = firstDayOfMonth.subtract(Duration(days: 1)).add(Duration(days: i));
-    DateTime dayEnd = new DateTime(dayBegin.year, dayBegin.month, dayBegin.day, 23, 59, 59);
-
-
-    // data structures
-    List<HealthDataPoint> dataDay = [];
-    // heart
-    Map<int, List<int>> heartratesMap = {};
-    List<int> heartrates = [];
-    List<int> heartratesWalking = [];
-    List<int> heartratesResting = [];
-    // step
-    int totalSteps = 0;
-    int totalDistance = 0;
-    Map<int, List<int>> stepsMap = {};
-    Map<int, List<int>> distanceMap = {};
-    // activity
-    int energyBurned = 0;
-    int movementMins = 0;
-    Map<int, List<int>> energyBurnedMap = {};
-    Map<int, List<int>> moveMinsMap = {};
-    // sleep
-    List<int> sleepTime = [];
-    List<int> awakeTime = [];
-    List<int> inBedTime = [];
-
-
-    // READ data using healthkit
-    List<HealthDataPoint> healthDataDay = await health.getHealthDataFromTypes(dayBegin, dayEnd, types);
-    dataDay.addAll(healthDataDay);
-    // WRITE data into data structures
-    for (var i = 0; i < dataDay.length; i++) {
-      DateTime date = dataDay[i].dateTo;
-      int value = dataDay[i].value.floor();
-
-      // HEART
-      if (dataDay[i].type == HealthDataType.WALKING_HEART_RATE) heartratesWalking.add(value);
-      if (dataDay[i].type == HealthDataType.RESTING_HEART_RATE) heartratesResting.add(value);
-      if (dataDay[i].type == HealthDataType.HEART_RATE) {
-        heartrates.add(value);
-        if (!heartratesMap.containsKey(date.hour)) heartratesMap[date.hour] = [];
-        heartratesMap[date.hour] = heartratesMap[date.hour]..addAll([value]);
-      }
-
-      // STEP
-      if (dataDay[i].type == HealthDataType.STEPS) {
-        totalSteps += value;
-        if (!stepsMap.containsKey(date.hour)) stepsMap[date.hour] = [];
-        stepsMap[date.hour] = stepsMap[date.hour]..addAll([value]);
-      }
-      if (dataDay[i].type == HealthDataType.DISTANCE_DELTA) {
-        totalDistance += value;
-        if (!distanceMap.containsKey(date.hour)) distanceMap[date.hour] = [];
-        distanceMap[date.hour] = distanceMap[date.hour]..addAll([value]);
-      }
-
-      // ACTIVITY
-      if (dataDay[i].type == HealthDataType.ACTIVE_ENERGY_BURNED) {
-        if ((dataDay[i].value - dataDay[i].value.floor()).abs() == 0) {
-          if (!energyBurnedMap.containsKey(date.hour)) energyBurnedMap[date.hour] = [];
-          energyBurnedMap[date.hour] = energyBurnedMap[date.hour]..addAll([value]);
-          energyBurned += value;
-        }
-      }
-      if (dataDay[i].type == HealthDataType.MOVE_MINUTES) {
-        movementMins += value;
-        if (!moveMinsMap.containsKey(date.hour)) moveMinsMap[date.hour] = [];
-        moveMinsMap[date.hour] = moveMinsMap[date.hour]..addAll([value]);
-      }
-
-      // SLEEP
-      if (dataDay[i].type == HealthDataType.SLEEP_ASLEEP) sleepTime.add(value);
-      if (dataDay[i].type == HealthDataType.SLEEP_AWAKE) awakeTime.add(value);
-      if (dataDay[i].type == HealthDataType.SLEEP_IN_BED) inBedTime.add(value);
-    }
-
-
-    // add empty data structures (to avoid empty list errors)
-    // heart
-    if (heartrates.isEmpty) heartrates.add(0);
-    if (heartratesWalking.isEmpty) heartratesWalking.add(0);
-    if (heartratesResting.isEmpty) heartratesResting.add(0);
-    // sleep
-    if (sleepTime.isEmpty) sleepTime.add(0);
-    if (awakeTime.isEmpty) awakeTime.add(0);
-    if (inBedTime.isEmpty) inBedTime.add(0);
-
-
-    // save month's data into firestore
-    // heart
-    if (heartrates.reduce((a,b) => a+b) != 0)
-      await firestoreHeart(dayBegin, heartratesMap, heartrates, heartratesResting, heartratesWalking);
-    // step
-    if (totalSteps != 0 && totalDistance != 0)
-      await firestoreStep(dayBegin, totalSteps, totalDistance, stepsMap, distanceMap);
-    // activity
-    if (energyBurned != 0 && movementMins != 0)
-      await firestoreActivity(dayBegin, energyBurned, movementMins, energyBurnedMap, moveMinsMap);
-    // sleep
-    if (sleepTime.reduce((a,b) => a+b) != 0)
-      await firestoreSleep(dayBegin, sleepTime, awakeTime, inBedTime);
-
-    uploadPercent += 1;
-    print("___________________\n$dayBegin - $dayEnd");
+// region SLEEP DATA
+  class SleepData {
+    final String starttime;
+    final String endtime;
+    final String type;
+    SleepData({this.starttime, this.endtime, this.type});
   }
-  uploading = false;
-  uploadPercent = 0;
-}
+
+  List<charts.Series<GraphData, DateTime>> sleep_dayData;
+  List<charts.Series<GraphData, DateTime>> sleep_weekdata;
+  List<charts.Series<GraphData, DateTime>> sleep_monthdata;
+
+  // day data
+    List<SleepData> sleep_allDayData = [];
+    int sleep_day_awake = 0;
+    int sleep_day_light = 0;
+    int sleep_day_deep = 0;
+    int sleep_day_rem = 0;
+  // week data
+    List<SleepData> sleep_allWeekData = [];
+    int sleep_week_awake = 0;
+    int sleep_week_light = 0;
+    int sleep_week_deep = 0;
+    int sleep_week_rem = 0;
+  // month data
+    List<SleepData> sleep_allMonthData = [];
+    int sleep_month_awake = 0;
+    int sleep_month_light = 0;
+    int sleep_month_deep = 0;
+    int sleep_month_rem = 0;
+// endregion
+
+// region HEART DATA
+  class HeartData {
+    final String starttime;
+    final String endtime;
+    final int bpm;
+    HeartData({this.starttime, this.endtime, this.bpm});
+  }
+
+  List<charts.Series<GraphData, DateTime>> heart_dayData;
+  List<charts.Series<GraphData, DateTime>> heart_weekdata;
+  List<charts.Series<GraphData, DateTime>> heart_monthdata;
+
+  // day data
+    List<HeartData> heart_allDayData = [];
+    List<int> heart_day_heartrate = [];
+  // week data
+    List<HeartData> heart_allWeekData = [];
+    List<int> heart_week_heartrate = [];
+  // month data
+    List<HeartData> heart_allMonthData = [];
+    List<int> heart_month_heartrate = [];
+// endregion
+
+// region ACTIVITY DATA
+  class CalorieData {
+    final String starttime;
+    final String endtime;
+    final int burned;
+    CalorieData({this.starttime, this.endtime, this.burned});
+  }
+
+  List<charts.Series<GraphData, DateTime>> activity_dayData;
+  List<charts.Series<GraphData, DateTime>> activity_weekdata;
+  List<charts.Series<GraphData, DateTime>> activity_monthdata;
+
+  // day data
+    List<CalorieData> activity_allDayData = [];
+    int activity_day_calories = 0;
+    int activity_day_movemins = 0;
+  // week data
+    List<CalorieData> activity_allWeekData = [];
+    int activity_week_calories = 0;
+    int activity_week_movemins = 0;
+  // month data
+    List<CalorieData> activity_allMonthData = [];
+    int activity_month_calories = 0;
+    int activity_month_movemins = 0;
+// endregion
+
+// region STEPS DATA
+  class StepData {
+    final String starttime;
+    final String endtime;
+    final int steps;
+    StepData({this.starttime, this.endtime, this.steps});
+  }
+
+  List<charts.Series<GraphData, DateTime>> steps_dayData;
+  List<charts.Series<GraphData, DateTime>> steps_weekdata;
+  List<charts.Series<GraphData, DateTime>> steps_monthdata;
+
+  // day data
+    List<StepData> steps_allDayData = [];
+    int steps_day_steps = 0;
+    int steps_day_distance = 0;
+  // week data
+    List<StepData> steps_allWeekData = [];
+    int steps_week_steps = 0;
+    int steps_week_distance = 0;
+  // month data
+    List<StepData> steps_allMonthData = [];
+    int steps_month_steps = 0;
+    int steps_month_distance = 0;
+// endregion

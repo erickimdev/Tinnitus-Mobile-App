@@ -17,10 +17,8 @@ import 'package:tinnitus_app/pages/smartwatch/parts/sleep.dart';
 
 User user;
 bool loggedIn = false;
-bool dailySubmitted = false;
 bool calendarSynced = false;
-var activityPermission;
-bool healthPermissionsGranted;
+bool dailySubmitted = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

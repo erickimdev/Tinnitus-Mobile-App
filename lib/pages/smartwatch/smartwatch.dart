@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:tinnitus_app/main.dart';
-import 'utils.dart';
+import 'package:flutter/cupertino.dart';
 
 class SmartwatchPage extends StatefulWidget {
   @override
@@ -16,7 +13,6 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     double multiplier = 1.5;
     return GestureDetector(
       child: Card(
-        // color: Colors.black54,
         color: Colors.grey[200],
         child: Padding(
           padding: EdgeInsets.fromLTRB(LR*multiplier, 16*multiplier, LR*multiplier, 16*multiplier),
@@ -42,77 +38,9 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
         ),
       ),
       onTap: () {
-        print("$_text");
         Navigator.pushNamed(context, _route);
       },
     );
-  }
-  void askPermissions() async {
-    if (healthPermissionsGranted) {
-      setState(() {
-        uploading = true;
-      });
-      if (!uploaded) gatherData(0, lastDayOfMonth.day + 1);
-      else gatherData(day.day, day.day + 1);
-    }
-  }
-
-  Widget uploadButton() {
-    if (!uploading) {
-      return TextButton.icon(
-        icon: Icon(Icons.upload),
-        label: Text("Upload Month's Data", style: TextStyle(fontSize: 17),),
-        onPressed: () async {
-          bool confirm = await confirmUpload();
-          if (confirm) {
-            setState(() { uploading = true; });
-            if (healthPermissionsGranted) await gatherData(0, lastDayOfMonth.day + 1);
-          }
-        }
-      );
-    }
-    else {
-      return Column(
-        children: [
-          SizedBox(height: 15),
-          Text(
-            "Uploading... $uploadPercent%",
-            style: TextStyle(fontSize: 18, color: Colors.blue,),
-          ),
-        ],
-      );
-    }
-  }
-  Future<bool> confirmUpload() async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: new Text("Upload this month's data?"),
-          content: new Text("Please wait until loading is finished before exiting the app."),
-          actions: <Widget>[
-            new TextButton(
-              child: new Text("CANCEL", style: TextStyle(fontSize: 15,),),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            new TextButton(
-              child: new Text("UPLOAD", style: TextStyle(fontSize: 15,),),
-              onPressed: () async {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // askPermissions();
   }
 
   @override
@@ -172,7 +100,6 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
               ),
 
               SizedBox(height: 40.0),
-              // uploadButton(),
             ],
           ),
         ),

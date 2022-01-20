@@ -1,22 +1,8 @@
-import 'package:intl/intl.dart';
 import '../utils.dart';
-import 'package:tinnitus_app/main.dart';
-import '../../../FirestoreService.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'dart:convert';
-import 'dart:io';
-import "package:http/http.dart" as http;
-import 'package:flutter/services.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:oauth2_client/oauth2_helper.dart';
-import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:random_string/random_string.dart';
-import 'package:oauth2_client/src/oauth2_utils.dart';
 import 'dart:math';
-import 'package:intl/date_symbol_data_local.dart';
 
 
 class HeartPage extends StatefulWidget {
@@ -24,73 +10,15 @@ class HeartPage extends StatefulWidget {
   _HeartPageState createState() => _HeartPageState();
 }
 
-List<charts.Series<GraphData, DateTime>> dayData;
-List<charts.Series<GraphData, DateTime>> weekdata;
-List<charts.Series<GraphData, DateTime>> monthdata;
-
 class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMixin {
-  //region Oauth2 configuration
-  String _codeVerifier;
-  String _authorizationCode;
-  String _accessToken;
-
-  var flutterWebViewPlugin = FlutterWebviewPlugin();
-  FlutterAppAuth _appAuth = FlutterAppAuth();
-  String _clientId = '394465226852-gu85ptes9hdhtqk2i9oacs87tap58va9.apps.googleusercontent.com';
-  var kAndroidUserAgent = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
-  String _redirectUrl = 'http://127.0.0.1:8181';
-  String _discoveryUrl = 'https://www.googleapis.com/oauth2/v1/certs';
-
-  AuthorizationServiceConfiguration _serviceConfiguration = const AuthorizationServiceConfiguration(
-      'https://accounts.google.com/o/oauth2/v2/auth',
-      'https://oauth2.googleapis.com/token'
-  );
-
-  List<String> _scopes = <String>[
-    'https://www.googleapis.com/auth/fitness.activity.read',
-    'https://www.googleapis.com/auth/fitness.sleep.read',
-    'https://www.googleapis.com/auth/fitness.heart_rate.read',
-    'https://www.googleapis.com/auth/fitness.location.read'
-  ];
-
-  OAuth2Helper hlp = OAuth2Helper(GoogleOAuth2Client(
-      redirectUri: 'http://127.0.0.1:8181',
-      customUriScheme: 'my.test.app'),
-      clientId: '394465226852-gu85ptes9hdhtqk2i9oacs87tap58va9.apps.googleusercontent.com'
-  );
-  //endregion
-
-
   String _highlights = "DAILY HIGHLIGHTS";
   bool _daySelected = true;
   bool _weekSelected = false;
   bool _monthSelected = false;
 
-  // day data
-    List<HeartData> allDayData = [];
-    List<int> day_heartrate = [];
-  // week data
-    List<HeartData> allWeekData = [];
-    List<int> week_heartrate = [];
-  // month data
-    List<HeartData> allMonthData = [];
-    List<int> month_heartrate = [];
-
-
   @override
   void initState() {
     super.initState();
-
-    if (_accessToken == null) {
-      // get data
-      startHttpServer();
-
-      // authorize
-      flutterWebViewPlugin.onUrlChanged.listen((String url) {
-        if (mounted) setState(() { if (url.contains("code=")) flutterWebViewPlugin.close(); });
-      });
-      startAuthorization();
-    }
   }
 
 
@@ -100,26 +28,30 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
     return OutlinedButton(
         style: buttonStyle,
         onPressed: () {
-          setState(() {
-            if (_text == "Day") {
-              _daySelected = true;
-              _weekSelected = false;
-              _monthSelected = false;
-              _highlights = "DAILY HIGHLIGHTS";
-            }
-            else if (_text == "Week") {
-              _daySelected = false;
-              _weekSelected = true;
-              _monthSelected = false;
-              _highlights = "WEEKLY HIGHLIGHTS";
-            }
-            else if (_text == "Month") {
-              _daySelected = false;
-              _weekSelected = false;
-              _monthSelected = true;
-              _highlights = "MONTHLY HIGHLIGHTS";
-            }
-          });
+          if ((_text == "Day" && _highlights != "DAILY HIGHLIGHTS")
+          || (_text == "Week" && _highlights != "WEEKLY HIGHLIGHTS")
+          || (_text == "Month" && _highlights != "MONTHLY HIGHLIGHTS")) {
+            setState(() {
+              if (_text == "Day") {
+                _daySelected = true;
+                _weekSelected = false;
+                _monthSelected = false;
+                _highlights = "DAILY HIGHLIGHTS";
+              }
+              else if (_text == "Week") {
+                _daySelected = false;
+                _weekSelected = true;
+                _monthSelected = false;
+                _highlights = "WEEKLY HIGHLIGHTS";
+              }
+              else if (_text == "Month") {
+                _daySelected = false;
+                _weekSelected = false;
+                _monthSelected = true;
+                _highlights = "MONTHLY HIGHLIGHTS";
+              }
+            });
+          }
         },
         child: Padding(
           padding: _insets,
@@ -135,9 +67,9 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
   }
   Widget barGraph() {
     List<charts.Series<GraphData, DateTime>> data;
-    if (_daySelected) data = dayData;
-    else if (_weekSelected) data = weekdata;
-    else if (_monthSelected) data = monthdata;
+    if (_daySelected) data = heart_dayData;
+    else if (_weekSelected) data = heart_weekdata;
+    else if (_monthSelected) data = heart_monthdata;
 
     return SingleChildScrollView(
         child: SizedBox(
@@ -211,37 +143,37 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
   }
   Widget highlights() {
     if (_daySelected) {
-      int day_avg = day_heartrate.reduce((a,b)=>a+b).toDouble() ~/ day_heartrate.length;
+      int day_avg = heart_day_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_day_heartrate.length;
 
       return Column(children: [
         SizedBox(height: 10),
-        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), day_heartrate.reduce(max), "BPM"),
+        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), heart_day_heartrate.reduce(max), "BPM"),
         SizedBox(height: 10),
-        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), day_heartrate.reduce(min), "BPM"),
+        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), heart_day_heartrate.reduce(min), "BPM"),
         SizedBox(height: 10),
         metrics("Average Heart Rate:", EdgeInsets.fromLTRB(0, 0, 86, 2.5), day_avg, "BPM"),
       ],);
     }
     else if (_weekSelected) {
-      int week_avg = week_heartrate.reduce((a,b)=>a+b).toDouble() ~/ week_heartrate.length;
+      int week_avg = heart_week_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_week_heartrate.length;
 
       return Column(children: [
         SizedBox(height: 10),
-        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), week_heartrate.reduce(max), "BPM"),
+        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), heart_week_heartrate.reduce(max), "BPM"),
         SizedBox(height: 10),
-        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), week_heartrate.reduce(min), "BPM"),
+        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), heart_week_heartrate.reduce(min), "BPM"),
         SizedBox(height: 10),
         metrics("Average Heart Rate:", EdgeInsets.fromLTRB(0, 0, 86, 2.5), week_avg, "BPM"),
       ],);
     }
     else if (_monthSelected) {
-      int month_avg = month_heartrate.reduce((a,b)=>a+b).toDouble() ~/ month_heartrate.length;
+      int month_avg = heart_month_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_month_heartrate.length;
 
       return Column(children: [
         SizedBox(height: 10),
-        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), month_heartrate.reduce(max), "BPM"),
+        metrics("Maximum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 65, 2.5), heart_month_heartrate.reduce(max), "BPM"),
         SizedBox(height: 10),
-        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), month_heartrate.reduce(min), "BPM"),
+        metrics("Minimum Heart Rate:", EdgeInsets.fromLTRB(0, 0, 70, 2.5), heart_month_heartrate.reduce(min), "BPM"),
         SizedBox(height: 10),
         metrics("Average Heart Rate:", EdgeInsets.fromLTRB(0, 0, 86, 2.5), month_avg, "BPM"),
       ],);
@@ -252,7 +184,7 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    if (dayData == null) return CircularProgressIndicator();
+    if (heart_dayData == null) return CircularProgressIndicator();
     return Scaffold(
       backgroundColor: Color.fromRGBO(34, 69, 151, 1),
       appBar: AppBar(
@@ -343,245 +275,4 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
 
     );
   }
-
-
-  // DAY DATA
-    List<charts.Series<GraphData, DateTime>> createDayGraph() {
-      Map<int, List<int>> hr_map = {};
-      for (var i = 0; i <= 23; i++) hr_map[i] = [];
-
-      for (var i in allDayData) {
-        DateTime hr_date = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
-        hr_map[hr_date.hour] = hr_map[hr_date.hour] + [i.bpm];
-
-        day_heartrate.add(i.bpm);
-      }
-
-      List<GraphData> hr_list = [];
-      hr_map.forEach((k,v) {
-        if (v.length != 0) {
-          int avg = v.reduce((a,b)=>a+b).toDouble() ~/ v.length;
-          if (v != 0) hr_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), avg));
-        }
-      });
-
-      List<charts.Series<GraphData, DateTime>> final_result = [
-        new charts.Series<GraphData, DateTime>(
-          id: "Sleep Data",
-          data: hr_list,
-          domainFn: (GraphData hr, _) => hr.day,      // x axis
-          measureFn: (GraphData hr, _) => hr.value,   // y axis
-          colorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-          fillColorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-        )
-      ];
-
-      return final_result;
-    }
-  // WEEK DATA
-    List<charts.Series<GraphData, DateTime>> createWeekGraph() {
-      Map<int, List<int>> hr_map = {};
-      List<GraphData> hr_list = [];
-
-      // entire week part of the same month
-      if (firstDayOfWeek.month == lastDayOfWeek.month) {
-        for (var i = firstDayOfWeek.day; i <= lastDayOfWeek.day; i++) hr_map[i] = [];
-
-        for (var i in allWeekData) {
-          DateTime hr_date = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
-          hr_map[hr_date.day] = hr_map[hr_date.day] + [i.bpm];
-
-          week_heartrate.add(i.bpm);
-        }
-
-        hr_map.forEach((k,v) {
-          if (v.length != 0) {
-            int avg = v.reduce((a,b)=>a+b).toDouble() ~/ v.length;
-            hr_list.add(new GraphData(DateTime(lastDayOfWeek.year, lastDayOfWeek.month, k), avg));
-          }
-        });
-      }
-      // week merges into 2 different months
-      else {
-        for (var i = firstDayOfWeek.day; i <= DateTime(firstDayOfWeek.year, firstDayOfWeek.month + 1, 0).day; i++) hr_map[i] = [];
-        for (var i = 1; i <= lastDayOfWeek.day; i++) hr_map[i] = [];
-
-
-        for (var i in allWeekData) {
-          DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
-          DateTime sleep_date = d.day > 15 ? DateTime(d.year, d.month, d.day) : DateTime(d.year, d.month+1, d.day);
-          hr_map[sleep_date.day] = hr_map[sleep_date.day] + [i.bpm];
-
-          week_heartrate.add(i.bpm);
-        }
-
-        hr_map.forEach((k,v) {
-          if (v.length != 0) {
-            int avg = v.reduce((a,b)=>a+b).toDouble() ~/ v.length;
-            if (k > 15) hr_list.add(new GraphData(DateTime(lastDayOfWeek.year, lastDayOfWeek.month-1, k), avg));
-            else hr_list.add(new GraphData(DateTime(lastDayOfWeek.year, lastDayOfWeek.month, k), avg));
-          }
-        });
-      }
-
-      List<charts.Series<GraphData, DateTime>> final_result = [
-        new charts.Series<GraphData, DateTime>(
-          id: "Sleep Data",
-          data: hr_list,
-          domainFn: (GraphData hr, _) => hr.day,      // x axis
-          measureFn: (GraphData hr, _) => hr.value,   // y axis
-          colorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-          fillColorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-        )
-      ];
-
-      return final_result;
-    }
-  // MONTH DATA
-    List<charts.Series<GraphData, DateTime>> createMonthGraph() {
-      Map<int, List<int>> hr_map = {};
-      for (var i = 1; i <= lastDayOfMonth.day; i++) hr_map[i] = [];
-
-      for (var i in allMonthData) {
-        DateTime hr_date = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
-        hr_map[hr_date.day] = hr_map[hr_date.day] + [i.bpm];
-
-        month_heartrate.add(i.bpm);
-      }
-
-      List<GraphData> hr_list = [];
-      hr_map.forEach((k,v) {
-        if (v.length != 0) {
-          int avg = v.reduce((a,b)=>a+b).toDouble() ~/ v.length;
-          hr_list.add(new GraphData(DateTime(lastDayOfMonth.year, lastDayOfMonth.month, k), avg));
-        }
-      });
-
-      List<charts.Series<GraphData, DateTime>> final_result = [
-        new charts.Series<GraphData, DateTime>(
-          id: "Sleep Data",
-          data: hr_list,
-          domainFn: (GraphData hr, _) => hr.day,      // x axis
-          measureFn: (GraphData hr, _) => hr.value,   // y axis
-          colorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-          fillColorFn: (_, __) => charts.MaterialPalette.yellow.shadeDefault,
-        )
-      ];
-
-      return final_result;
-    }
-
-
-  // HTTP PART
-  Future<void> postRequest(DateTime starttime, DateTime endtime, String duration) async {
-    List<Map<String, String>> _aggregate = [
-      {"dataTypeName": "com.google.heart_rate.bpm"},
-    ];
-
-    final http.Response httpResponse = await http.post(
-        Uri.parse('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $_accessToken',
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode({
-          "aggregateBy": _aggregate,
-          "startTimeMillis": starttime.millisecondsSinceEpoch,
-          "endTimeMillis": endtime.millisecondsSinceEpoch,
-        })
-    );
-
-    if (httpResponse.statusCode == 200) {
-      // get heartrate data
-      var heartrate = jsonDecode(httpResponse.body)['bucket'][0]['dataset'][0]['point'];
-      for (var i in heartrate) {
-        HeartData data = new HeartData(
-            starttime: i['startTimeNanos'],
-            endtime: i['endTimeNanos'],
-            bpm: int.parse((i['value'][0]['fpVal']).toString())
-        );
-
-        if (duration == "day") allDayData.add(data);
-        if (duration == "week") allWeekData.add(data);
-        if (duration == "month") allMonthData.add(data);
-      }
-
-      setState(() {});
-    } else print("unable to get data");
-  }
-  Future<void> startHttpServer() async {
-    try {
-      var server = await HttpServer.bind(InternetAddress.loopbackIPv4, 8181);
-      await for (var request in server) {
-        if (request.headers.value('referer') != null && _authorizationCode == null) {
-          var codeurl = request.headers.value('referer');
-          request.response..headers.contentType = new ContentType("text", "plain", charset: "utf-8")..close();
-          var codestart = codeurl.indexOf("code=");
-          var codeend = codeurl.indexOf("&", codestart);
-          _authorizationCode = codeurl.substring(codestart + 5, codeend);
-
-          // deleted function
-          if (_authorizationCode != null) {
-            setState(() {});
-            try {
-              TokenResponse result = await _appAuth.token(TokenRequest(
-                  _clientId, _redirectUrl,
-                  authorizationCode: _authorizationCode,
-                  discoveryUrl: _discoveryUrl,
-                  serviceConfiguration: _serviceConfiguration,
-                  codeVerifier: _codeVerifier,
-                  scopes: _scopes
-              ));
-              _accessToken = result.accessToken;
-
-              // send POST request to get data
-              if (allDayData.isEmpty) await postRequest(dayBegin, dayEnd, "day");
-              if (allWeekData.isEmpty) await postRequest(firstDayOfWeek, lastDayOfWeek, "week");
-              if (allMonthData.isEmpty) await postRequest(firstDayOfMonth, lastDayOfMonth, "month");
-              setState(() async {
-                dayData = createDayGraph();
-                weekdata = createWeekGraph();
-                monthdata = createMonthGraph();
-              });
-
-            } catch (e) {print("error: $e");}
-          }
-
-        }
-        request.response..headers.contentType = new ContentType("text", "plain", charset: "utf-8")..write("close")..close();
-      }
-    } catch (e) { print("server creation error: $e"); }
-  }
-
-  // AUTHORIZATION PART
-  Future<void> startAuthorization() async {
-    _codeVerifier ??= randomAlphaNumeric(80);
-    var codeChallenge = OAuth2Utils.generateCodeChallenge(_codeVerifier);
-    var auth = await hlp.client.getAuthorizeUrl(
-      clientId: _clientId,
-      redirectUri: _redirectUrl,
-      scopes: _scopes,
-      enableState: true,
-      codeChallenge: codeChallenge,
-    );
-    try {
-      flutterWebViewPlugin.launch(auth, userAgent: kAndroidUserAgent);
-    } on PlatformException catch (error) {
-      print("authorization error: ${error.message}");
-    }
-  }
-}
-
-
-class GraphData {
-  final DateTime day;
-  final int value;
-  GraphData(this.day, this.value);
-}
-
-class HeartData {
-  final String starttime;
-  final String endtime;
-  final int bpm;
-  HeartData({this.starttime, this.endtime, this.bpm});
 }

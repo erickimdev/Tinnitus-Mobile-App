@@ -67,9 +67,9 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
   }
   Widget barGraph() {
     List<charts.Series<GraphData, DateTime>> data;
-    if (_daySelected) data = heart_dayData;
-    else if (_weekSelected) data = heart_weekdata;
-    else if (_monthSelected) data = heart_monthdata;
+      if (_daySelected) data = heart_dayData;
+      else if (_weekSelected) data = heart_weekdata;
+      else if (_monthSelected) data = heart_monthdata;
 
     return SingleChildScrollView(
         child: SizedBox(

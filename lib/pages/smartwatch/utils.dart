@@ -8,8 +8,8 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 HealthFactory health = HealthFactory();
 
 // "current" date to read data
-//   DateTime d = DateTime(2022, 1, 18);
-  DateTime d = DateTime.now();
+  DateTime d = DateTime(2022, 1, 19);
+  // DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
 // time units for what range of data to read

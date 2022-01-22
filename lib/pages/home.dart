@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tinnitus_app/main.dart';
-import 'package:tinnitus_app/pages/smartwatch/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'dart:convert';
-import 'dart:io';
-import "package:http/http.dart" as http;
-import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
-import 'package:random_string/random_string.dart';
-import 'package:oauth2_client/src/oauth2_utils.dart';
 
 class HomePage extends StatefulWidget {
   @override

@@ -1,16 +1,7 @@
-import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tinnitus_app/main.dart';
-import 'calendar/utils.dart';
-import 'package:fit_kit/fit_kit.dart';
 import 'smartwatch/utils.dart';
-import 'package:health/health.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
-import 'package:tinnitus_app/main.dart';
 import 'package:tinnitus_app/pages/smartwatch/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';
 import 'dart:io';
@@ -944,7 +935,8 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Colors.black,
 
       body: Center(
-        child: Text('Loading...',
+        child: Text(
+          'Loading...',
           style: TextStyle(
             color: Colors.white,
             fontSize: 25,

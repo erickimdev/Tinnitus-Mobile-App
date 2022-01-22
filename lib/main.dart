@@ -12,7 +12,6 @@ import 'pages/smartwatch/parts/sleep.dart';
 import 'pages/smartwatch/parts/heart.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:tinnitus_app/pages/smartwatch/parts/sleep.dart';
 
 User user;

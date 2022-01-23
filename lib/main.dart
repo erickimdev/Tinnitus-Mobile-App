@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tinnitus_app/test.dart';
+// import 'package:tinnitus_app/test.dart';
 import 'pages/home.dart';
 import 'pages/calendar/calendar.dart';
 import 'pages/poll/poll.dart';
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/sleep': (context) => SleepPage(),
         '/heart': (context) => HeartPage(),
 
-        '/test': (context) => TestPage(),
+        // '/test': (context) => TestPage(),
       },
       theme: ThemeData(
         fontFamily: 'mont-med',

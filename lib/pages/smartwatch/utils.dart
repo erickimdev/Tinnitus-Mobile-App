@@ -1,11 +1,8 @@
-import 'package:health/health.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:oauth2_client/oauth2_helper.dart';
 import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
-
-HealthFactory health = HealthFactory();
 
 // "current" date to read data
   DateTime d = DateTime(2022, 1, 19);

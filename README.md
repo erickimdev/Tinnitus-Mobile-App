@@ -87,8 +87,8 @@ project
 
 
 ## LINKS
-* ["Smartband - App Connection" Instruction Guide](https://erickim.dev/wp-content/uploads/2022/03/Tinnitus-App-Instruction-Manual.pdf)
-* [Android APK Download](https://drive.google.com/file/d/1hDs7fnVB492pgGa-DsNm-KkFOkYk0bs7/view?usp=sharing) - current build
+* <a href="https://erickim.dev/wp-content/uploads/2022/03/Tinnitus-App-Instruction-Manual.pdf" target="_blank">"Smartband - App Connection" Instruction Guide</a>
+* <a href="https://drive.google.com/file/d/1hDs7fnVB492pgGa-DsNm-KkFOkYk0bs7/view?usp=sharing" target="_blank">Android APK Download</a>
 * iOS Download - coming soon!
 
 

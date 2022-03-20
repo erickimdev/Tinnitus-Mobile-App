@@ -19,7 +19,7 @@ Mobile app created for Android / iOS designed specifically for tinnitus patients
         3. Sometimes
         4. Often
         5. Always
-    ```
+  ```
   3. **Day-Week-Month graphs that constantly measure and visualizes physical metrics using smartband, including:**
   ```
     > Heart:
@@ -41,7 +41,7 @@ Mobile app created for Android / iOS designed specifically for tinnitus patients
         - Deep Sleep Time
         - REM Sleep Time
         - Total Time Asleep
-    ```
+  ```
 
 ### Project File Hierarchy
 ```

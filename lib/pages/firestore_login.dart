@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Color.fromRGBO(34, 69, 151, 1),
 
       appBar: AppBar(
-        title: Text('Firestore'),
+        title: Text('Tinnitus App'),
         centerTitle: true,
         backgroundColor: Colors.black12,
         elevation: 5,

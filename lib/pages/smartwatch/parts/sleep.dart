@@ -291,34 +291,34 @@ class _SleepPageState extends State<SleepPage> with SingleTickerProviderStateMix
       ),
 
 
-      // region DEBUG BUTTON
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-
-          sleep_allDayData.forEach((i) {
-              int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-              DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-              String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
-
-              int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-              DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-              String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
-
-              print("${i.type}: $start_time to $end_time");
-          });
-
-
-          // sleep_allDayData.forEach((i) {
-          //   int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-          //   int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-          //   DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-          //   DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-          //   print("start:${start} - end:${end}");
-          // });
-
-        },
-      ),
-      //endregion
+      // // region DEBUG BUTTON
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //
+      //     sleep_allDayData.forEach((i) {
+      //         int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+      //         DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+      //         String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+      //
+      //         int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+      //         DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+      //         String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+      //
+      //         print("${i.type}: $start_time to $end_time");
+      //     });
+      //
+      //
+      //     // sleep_allDayData.forEach((i) {
+      //     //   int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+      //     //   int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+      //     //   DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+      //     //   DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+      //     //   print("start:${start} - end:${end}");
+      //     // });
+      //
+      //   },
+      // ),
+      // //endregion
 
 
     );

@@ -109,7 +109,7 @@ class FirestoreService {
 
   // SLEEP
     // features
-  Future<void> sleepFeatures(DateTime day, String awake, String light, String deep, String rem) async {
+  Future<void> sleepFeatures(DateTime day, String awake, String light, String deep, String rem, String start_time, String end_time) async {
     String date = DateFormat('MM-dd-yyyy').format(day).toString();
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Sleep').doc('Features').set({
@@ -117,6 +117,15 @@ class FirestoreService {
           'Light Sleep': light,
           'Deep Sleep': deep,
           'REM Sleep': rem,
+
+          '~ Sleep Start Time': start_time,
+          '~ Wake Up Time': end_time,
       });
+  }
+    // sleep tracker
+  Future<void> sleepTracker(DateTime day, Map<String, String> tracker) async {
+    String date = DateFormat('MM-dd-yyyy').format(day).toString();
+    return await userCollection.doc(uid).collection('Behaviorome').doc(date)
+        .collection('Sleep').doc('Sleep Tracker').set(tracker);
   }
 }

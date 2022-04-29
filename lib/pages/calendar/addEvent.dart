@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'utils.dart';
-import '../../FirestoreService.dart';
+import '../../services/firestore.dart';
 import 'package:tinnitus_app/main.dart';
 
 class AddEvent extends StatefulWidget {

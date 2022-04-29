@@ -1,8 +1,8 @@
-import '../utils.dart';
+import '../data.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
-import '../../../FirestoreService.dart';
+import '../../../services/firestore.dart';
 import '../../../main.dart';
 
 

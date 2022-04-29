@@ -1,8 +1,8 @@
-import '../utils.dart';
+import '../data.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
-import '../../../FirestoreService.dart';
+import '../../../services/firestore.dart';
 import '../../../main.dart';
 
 
@@ -18,11 +18,42 @@ class _SleepPageState extends State<SleepPage> with SingleTickerProviderStateMix
   bool _monthSelected = false;
 
   void updateFirestore() async {
+    // features
     String awake = "${(sleep_day_awake / 60).floor()}h ${(sleep_day_awake % 60)}m";
     String light = "${(sleep_day_light / 60).floor()}h ${(sleep_day_light % 60)}m";
     String deep = "${(sleep_day_deep / 60).floor()}h ${(sleep_day_deep % 60)}m";
     String rem = "${(sleep_day_rem / 60).floor()}h ${(sleep_day_rem % 60)}m";
-    await FirestoreService(uid: "${user.email}").sleepFeatures(day, awake, light, deep, rem);
+
+    int s = int.parse(sleep_allDayData[0].starttime.substring(0, sleep_allDayData[0].starttime.length - 6));
+    DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+    String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+
+    int e = int.parse(sleep_allDayData.last.endtime.substring(0, sleep_allDayData.last.endtime.length - 6));
+    DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+    String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+
+    await FirestoreService(uid: "${user.email}").sleepFeatures(day, awake, light, deep, rem, start_time, end_time);
+
+
+    // sleep tracker
+    Map<String, String> tracker = new Map();
+    int count = 0;
+
+    sleep_allDayData.forEach((i) {
+      int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+      DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+      String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+
+      int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+      DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+      String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+
+      count += 1;
+
+      tracker["${count.toString().padLeft(2, '0')} - ${i.type}"] = "$start_time to $end_time";
+    });
+
+    await FirestoreService(uid: "${user.email}").sleepTracker(day, tracker);
   }
 
   @override
@@ -310,23 +341,28 @@ class _SleepPageState extends State<SleepPage> with SingleTickerProviderStateMix
       // region DEBUG BUTTON
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // allDayData.forEach((i) {
-          //   int start = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-          //   int end = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-          //   int mins = (end/60000).floor() - (start/60000).floor();
-          //   String sleep_date = DateFormat("MM-dd-yyyy HH:mm").format(DateTime.fromMillisecondsSinceEpoch(start));
-          //
-          //   print("$sleep_date: ${i.type} - $mins minutes");
+
+          sleep_allDayData.forEach((i) {
+              int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+              DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+              String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+
+              int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+              DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+              String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+
+              print("${i.type}: $start_time to $end_time");
+          });
+
+
+          // sleep_allDayData.forEach((i) {
+          //   int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+          //   int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+          //   DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
+          //   DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
+          //   print("start:${start} - end:${end}");
           // });
 
-          // allMonthData.forEach((i) {
-          //   int start = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-          //   int end = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-          //   int mins = (end/60000).floor() - (start/60000).floor();
-          //   String sleep_date = DateFormat("MM-dd-yyyy").format(DateTime.fromMillisecondsSinceEpoch(start));
-          //
-          //   print("$sleep_date: ${i.type} - $mins minutes");
-          // });
         },
       ),
       //endregion

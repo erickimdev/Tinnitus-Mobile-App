@@ -62,10 +62,14 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             splashRadius: 20,
             onPressed: () async {
+              // skip firebase login
               if (!loggedIn) {
                 user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
-                Navigator.pushNamed(context, '/profile');
+                Navigator.pushNamed(context, '/api');
               }
+
+              // // manual firebase login
+              // Navigator.pushNamed(context, '/login');
             },
             icon: Icon(
               Icons.account_circle,

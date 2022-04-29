@@ -5,8 +5,8 @@ import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
 // "current" date to read data
-  DateTime d = DateTime(2021, 9, 17);
-  // DateTime d = DateTime.now();
+//   DateTime d = DateTime(2021, 9, 17);
+  DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
 // time units for what range of data to read

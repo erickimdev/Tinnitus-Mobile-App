@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'utils.dart';
-import '../../FirestoreService.dart';
+import '../../services/firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tinnitus_app/main.dart';
 

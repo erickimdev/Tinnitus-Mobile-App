@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tinnitus_app/main.dart';
-import 'smartwatch/utils.dart';
-import 'package:tinnitus_app/pages/smartwatch/utils.dart';
+import '../pages/smartwatch/data.dart';
+import 'package:tinnitus_app/pages/smartwatch/data.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';
 import 'dart:io';
@@ -13,12 +13,12 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:random_string/random_string.dart';
 import 'package:oauth2_client/src/oauth2_utils.dart';
 
-class ProfilePage extends StatefulWidget {
+class APICallPage extends StatefulWidget {
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _APICallPageState createState() => _APICallPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _APICallPageState extends State<APICallPage> {
   // CREATE GRAPHS
     // SLEEP
     List<charts.Series<GraphData, DateTime>> sleep_createDayGraph() {
@@ -349,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage> {
             hr_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), avg));
 
             // firestore
-            String time = "${k}:00";
+            String time = "${k}:00".padLeft(5, '0');
             firestore_hr[time] = avg;
           }
         }
@@ -492,7 +492,7 @@ class _ProfilePageState extends State<ProfilePage> {
           burned_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
 
           // firestore
-          String time = "${k}:00";
+          String time = "${k}:00".padLeft(5, '0');
           firestore_calories[time] = v;
         }
       });
@@ -615,7 +615,7 @@ class _ProfilePageState extends State<ProfilePage> {
           step_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
 
           // firestore
-          String time = "${k}:00";
+          String time = "${k}:00".padLeft(5, '0');
           firestore_steps[time] = v;
         }
       });

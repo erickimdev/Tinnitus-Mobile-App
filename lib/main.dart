@@ -4,7 +4,7 @@ import 'pages/home.dart';
 import 'pages/calendar/calendar.dart';
 import 'pages/poll/poll.dart';
 import 'pages/smartwatch/smartwatch.dart';
-import 'pages/profile.dart';
+import 'services/api.dart';
 import 'pages/calendar/addEvent.dart';
 import 'pages/smartwatch/parts/step.dart';
 import 'pages/smartwatch/parts/activity.dart';
@@ -13,6 +13,7 @@ import 'pages/smartwatch/parts/heart.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tinnitus_app/pages/smartwatch/parts/sleep.dart';
+import 'pages/firestore_login.dart';
 
 User user;
 bool loggedIn = false;
@@ -34,7 +35,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => _MainPage(),
         '/home': (context) => HomePage(),
-        '/profile': (context) => ProfilePage(),
+        '/login': (context) => LoginPage(),
+        '/api': (context) => APICallPage(),
 
         '/calendar': (context) => CalendarPage(),
         '/add_event': (context) => AddEvent(),

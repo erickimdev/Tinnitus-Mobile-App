@@ -80,11 +80,21 @@ class _LoginPageState extends State<LoginPage> {
           // PROFILE ICON
           SizedBox(height: 60.0),
           Icon(
-            Icons.local_fire_department,
+            Icons.account_circle,
             color: Colors.white,
-            size: 100,
+            size: 80,
           ),
-          SizedBox(height: 50.0),
+          SizedBox(height: 15.0),
+          Text(
+            'My Profile',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 70.0),
 
           // EMAIL ADDRESS FORM
           Container(

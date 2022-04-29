@@ -17,19 +17,6 @@ class _StepPageState extends State<StepPage> with SingleTickerProviderStateMixin
   bool _weekSelected = false;
   bool _monthSelected = false;
 
-  void updateFirestore() async {
-    await FirestoreService(uid: "${user.email}").stepFeatures(day, steps_day_steps, steps_day_distance);
-    await FirestoreService(uid: "${user.email}").hourlySteps(day, firestore_steps);
-  }
-
-  @override
-  void initState() {
-    updateFirestore();
-
-    super.initState();
-  }
-
-
   Widget timeButton(String _text, EdgeInsetsGeometry _insets, bool selected) {
     ButtonStyle buttonStyle = selected ? ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.blue[800]))
         : ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlue));

@@ -17,19 +17,6 @@ class _ActivityPageState extends State<ActivityPage> with SingleTickerProviderSt
   bool _weekSelected = false;
   bool _monthSelected = false;
 
-  void updateFirestore() async {
-    await FirestoreService(uid: "${user.email}").activityFeatures(day, activity_day_calories, activity_day_movemins);
-    await FirestoreService(uid: "${user.email}").hourlyCalories(day, firestore_calories);
-  }
-
-  @override
-  void initState() {
-    updateFirestore();
-
-    super.initState();
-  }
-
-
   Widget timeButton(String _text, EdgeInsetsGeometry _insets, bool selected) {
     ButtonStyle buttonStyle = selected ? ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.blue[800]))
         : ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.lightBlue));

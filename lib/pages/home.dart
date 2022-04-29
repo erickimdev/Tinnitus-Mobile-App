@@ -63,13 +63,13 @@ class _HomePageState extends State<HomePage> {
             splashRadius: 20,
             onPressed: () async {
               // skip firebase login
-              if (!loggedIn) {
-                user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
-                Navigator.pushNamed(context, '/api');
-              }
+              // if (!loggedIn) {
+              //   user = (await FirebaseAuth.instance.signInWithEmailAndPassword(email: "eric@gmail.com", password: "asdfgh")).user;
+              //   Navigator.pushNamed(context, '/api');
+              // }
 
-              // // manual firebase login
-              // Navigator.pushNamed(context, '/login');
+              // manual firebase login
+              Navigator.pushNamed(context, '/login');
             },
             icon: Icon(
               Icons.account_circle,

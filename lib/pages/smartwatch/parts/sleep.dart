@@ -17,53 +17,6 @@ class _SleepPageState extends State<SleepPage> with SingleTickerProviderStateMix
   bool _weekSelected = false;
   bool _monthSelected = false;
 
-  void updateFirestore() async {
-    // features
-    String awake = "${(sleep_day_awake / 60).floor()}h ${(sleep_day_awake % 60)}m";
-    String light = "${(sleep_day_light / 60).floor()}h ${(sleep_day_light % 60)}m";
-    String deep = "${(sleep_day_deep / 60).floor()}h ${(sleep_day_deep % 60)}m";
-    String rem = "${(sleep_day_rem / 60).floor()}h ${(sleep_day_rem % 60)}m";
-
-    int s = int.parse(sleep_allDayData[0].starttime.substring(0, sleep_allDayData[0].starttime.length - 6));
-    DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-    String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
-
-    int e = int.parse(sleep_allDayData.last.endtime.substring(0, sleep_allDayData.last.endtime.length - 6));
-    DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-    String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
-
-    await FirestoreService(uid: "${user.email}").sleepFeatures(day, awake, light, deep, rem, start_time, end_time);
-
-
-    // sleep tracker
-    Map<String, String> tracker = new Map();
-    int count = 0;
-
-    sleep_allDayData.forEach((i) {
-      int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-      DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-      String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
-
-      int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-      DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-      String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
-
-      count += 1;
-
-      tracker["${count.toString().padLeft(2, '0')} - ${i.type}"] = "$start_time to $end_time";
-    });
-
-    await FirestoreService(uid: "${user.email}").sleepTracker(day, tracker);
-  }
-
-  @override
-  void initState() {
-    updateFirestore();
-
-    super.initState();
-  }
-
-
   Color type2Color(int type) {
     if (type == 0) return Colors.yellow;
     else if (type == 1) return Colors.cyan;

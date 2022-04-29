@@ -18,21 +18,6 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
   bool _weekSelected = false;
   bool _monthSelected = false;
 
-  void updateFirestore() async {
-    int avg_hr = heart_day_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_day_heartrate.length;
-    int max_hr = heart_day_heartrate.reduce(max);
-    int min_hr = heart_day_heartrate.reduce(min);
-    await FirestoreService(uid: "${user.email}").heartFeatures(day, avg_hr, max_hr, min_hr);
-    await FirestoreService(uid: "${user.email}").hourlyHeartRate(day, firestore_hr);
-  }
-
-  @override
-  void initState() {
-    updateFirestore();
-
-    super.initState();
-  }
-
 
   Widget timeButton(String _text, EdgeInsetsGeometry _insets, bool selected) {
     ButtonStyle buttonStyle = selected ? ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.blue[800]))

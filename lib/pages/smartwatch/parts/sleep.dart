@@ -2,6 +2,8 @@ import '../utils.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
+import '../../../FirestoreService.dart';
+import '../../../main.dart';
 
 
 class SleepPage extends StatefulWidget {
@@ -15,8 +17,18 @@ class _SleepPageState extends State<SleepPage> with SingleTickerProviderStateMix
   bool _weekSelected = false;
   bool _monthSelected = false;
 
+  void updateFirestore() async {
+    String awake = "${(sleep_day_awake / 60).floor()}h ${(sleep_day_awake % 60)}m";
+    String light = "${(sleep_day_light / 60).floor()}h ${(sleep_day_light % 60)}m";
+    String deep = "${(sleep_day_deep / 60).floor()}h ${(sleep_day_deep % 60)}m";
+    String rem = "${(sleep_day_rem / 60).floor()}h ${(sleep_day_rem % 60)}m";
+    await FirestoreService(uid: "${user.email}").sleepFeatures(day, awake, light, deep, rem);
+  }
+
   @override
   void initState() {
+    updateFirestore();
+
     super.initState();
   }
 

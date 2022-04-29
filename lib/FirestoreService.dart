@@ -12,7 +12,7 @@ class FirestoreService {
     return userCollection.snapshots();
   }
 
-  // TINNITUS EVENT CALENDAR
+  // ------------------- TINNITUS EVENT CALENDAR -------------------
     // add event
   Future<void> addTinnitusEvent(int q1, List<bool> q2, String date) async {
     String q2string = "";
@@ -34,7 +34,7 @@ class FirestoreService {
 
 
 
-  // DAILY FEELINGS
+  // ------------------- DAILY FEELINGS -------------------
   Future<void> updateDailyFeelings(int q1, int q2, int q3, int q4, int q5, int q6) async {
     String date = DateFormat('MM-dd-yyyy').format(DateTime.now());
     String time = DateFormat.jm().format(DateTime.now()).toString();
@@ -51,18 +51,16 @@ class FirestoreService {
 
 
 
-  // SMARTWATCH BEHAVIOROME
+  // ------------------- SMARTWATCH BEHAVIOROME -------------------
   // HEART
     // features
-  Future<void> heartFeatures(DateTime day, int avgHR, int avgRestingHR, int avgWalkingHR, int maxHR, int minHR) async {
+  Future<void> heartFeatures(DateTime day, int avgHR, int maxHR, int minHR) async {
     String date = DateFormat('MM-dd-yyyy').format(day).toString();
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Heart').doc('Features').set({
-      'Average Heart Rate': avgHR,
-      'Average Resting Heart Rate': avgRestingHR,
-      'Average Walking Heart Rate': avgWalkingHR,
-      'Maximum Heart Rate': maxHR,
-      'Minimum Heart Rate': minHR,
+          'Average Heart Rate': avgHR,
+          'Maximum Heart Rate': maxHR,
+          'Minimum Heart Rate': minHR,
     });
   }
     // hourly heart rate
@@ -80,7 +78,7 @@ class FirestoreService {
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Step').doc('Features').set({
       'Total Step Count': steps,
-      'Total Distance': distance,
+      'Total Distance (meters)': distance,
     });
   }
     // hourly step count
@@ -88,12 +86,6 @@ class FirestoreService {
     String date = DateFormat('MM-dd-yyyy').format(day).toString();
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Step').doc('Accumulated Hourly Step Count').set(hourlySteps);
-  }
-    // hourly distance
-  Future<void> hourlyDistance(DateTime day, Map<String, int> hourlyDistance) async {
-    String date = DateFormat('MM-dd-yyyy').format(day).toString();
-    return await userCollection.doc(uid).collection('Behaviorome').doc(date)
-        .collection('Step').doc('Accumulated Hourly Distance').set(hourlyDistance);
   }
 
 
@@ -113,23 +105,18 @@ class FirestoreService {
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Activity').doc('Accumulated Hourly Energy Burned').set(hourlyBurned);
   }
-    // hourly movement minutes
-  Future<void> hourlyMovementMins(DateTime day, Map<String, int> hourlyMM) async {
-    String date = DateFormat('MM-dd-yyyy').format(day).toString();
-    return await userCollection.doc(uid).collection('Behaviorome').doc(date)
-        .collection('Activity').doc('Accumulated Hourly Movement Minutes').set(hourlyMM);
-  }
 
 
   // SLEEP
     // features
-  Future<void> sleepFeatures(DateTime day, int asleep, int awake, int inBed) async {
+  Future<void> sleepFeatures(DateTime day, String awake, String light, String deep, String rem) async {
     String date = DateFormat('MM-dd-yyyy').format(day).toString();
     return await userCollection.doc(uid).collection('Behaviorome').doc(date)
         .collection('Sleep').doc('Features').set({
-      'Time Asleep': asleep,
-      'Time Awake': awake,
-      'Time in Bed': inBed,
-    });
+          'Time Awake': awake,
+          'Light Sleep': light,
+          'Deep Sleep': deep,
+          'REM Sleep': rem,
+      });
   }
 }

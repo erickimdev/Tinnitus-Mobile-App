@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tinnitus_app/main.dart';
 import 'smartwatch/utils.dart';
 import 'package:tinnitus_app/pages/smartwatch/utils.dart';
@@ -344,7 +345,13 @@ class _ProfilePageState extends State<ProfilePage> {
       hr_map.forEach((k,v) {
         if (v.length != 0) {
           int avg = v.reduce((a,b)=>a+b).toDouble() ~/ v.length;
-          if (v != 0) hr_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), avg));
+          if (v != 0) {
+            hr_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), avg));
+
+            // firestore
+            String time = "${k}:00";
+            firestore_hr[time] = avg;
+          }
         }
       });
 
@@ -481,7 +488,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
       List<GraphData> burned_list = [];
       burned_map.forEach((k,v) {
-        if (v != 0) burned_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
+        if (v != 0) {
+          burned_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
+
+          // firestore
+          String time = "${k}:00";
+          firestore_calories[time] = v;
+        }
       });
 
       List<charts.Series<GraphData, DateTime>> final_result = [
@@ -598,7 +611,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
       List<GraphData> step_list = [];
       step_map.forEach((k,v) {
-        if (v != 0) step_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
+        if (v != 0) {
+          step_list.add(new GraphData(DateTime(dayEnd.year, dayEnd.month, dayEnd.day, k), v));
+
+          // firestore
+          String time = "${k}:00";
+          firestore_steps[time] = v;
+        }
       });
 
       List<charts.Series<GraphData, DateTime>> final_result = [

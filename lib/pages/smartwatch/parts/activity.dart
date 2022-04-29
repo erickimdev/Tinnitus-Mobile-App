@@ -2,6 +2,8 @@ import '../utils.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
+import '../../../FirestoreService.dart';
+import '../../../main.dart';
 
 
 class ActivityPage extends StatefulWidget {
@@ -15,8 +17,15 @@ class _ActivityPageState extends State<ActivityPage> with SingleTickerProviderSt
   bool _weekSelected = false;
   bool _monthSelected = false;
 
+  void updateFirestore() async {
+    await FirestoreService(uid: "${user.email}").activityFeatures(day, activity_day_calories, activity_day_movemins);
+    await FirestoreService(uid: "${user.email}").hourlyCalories(day, firestore_calories);
+  }
+
   @override
   void initState() {
+    updateFirestore();
+
     super.initState();
   }
 

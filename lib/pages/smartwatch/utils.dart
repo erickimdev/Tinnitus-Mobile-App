@@ -5,7 +5,7 @@ import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
 // "current" date to read data
-  DateTime d = DateTime(2022, 1, 19);
+  DateTime d = DateTime(2021, 9, 17);
   // DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
@@ -114,6 +114,8 @@ class GraphData {
     HeartData({this.starttime, this.endtime, this.bpm});
   }
 
+  Map<String, int> firestore_hr = new Map();
+
   List<charts.Series<GraphData, DateTime>> heart_dayData;
   List<charts.Series<GraphData, DateTime>> heart_weekdata;
   List<charts.Series<GraphData, DateTime>> heart_monthdata;
@@ -136,6 +138,8 @@ class GraphData {
     final int burned;
     CalorieData({this.starttime, this.endtime, this.burned});
   }
+
+  Map<String, int> firestore_calories = new Map();
 
   List<charts.Series<GraphData, DateTime>> activity_dayData;
   List<charts.Series<GraphData, DateTime>> activity_weekdata;
@@ -162,6 +166,8 @@ class GraphData {
     final int steps;
     StepData({this.starttime, this.endtime, this.steps});
   }
+
+  Map<String, int> firestore_steps = new Map();
 
   List<charts.Series<GraphData, DateTime>> steps_dayData;
   List<charts.Series<GraphData, DateTime>> steps_weekdata;

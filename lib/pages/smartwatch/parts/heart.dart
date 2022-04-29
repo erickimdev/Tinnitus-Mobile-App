@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'dart:math';
+import '../../../FirestoreService.dart';
+import '../../../main.dart';
 
 
 class HeartPage extends StatefulWidget {
@@ -16,8 +18,18 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
   bool _weekSelected = false;
   bool _monthSelected = false;
 
+  void updateFirestore() async {
+    int avg_hr = heart_day_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_day_heartrate.length;
+    int max_hr = heart_day_heartrate.reduce(max);
+    int min_hr = heart_day_heartrate.reduce(min);
+    await FirestoreService(uid: "${user.email}").heartFeatures(day, avg_hr, max_hr, min_hr);
+    await FirestoreService(uid: "${user.email}").hourlyHeartRate(day, firestore_hr);
+  }
+
   @override
   void initState() {
+    updateFirestore();
+
     super.initState();
   }
 
@@ -268,6 +280,9 @@ class _HeartPageState extends State<HeartPage> with SingleTickerProviderStateMix
       // // region DEBUG BUTTON
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () async {
+      //     heart_day_heartrate.forEach((element) {
+      //       print(element);
+      //     });
       //   },
       // ),
       // //endregion

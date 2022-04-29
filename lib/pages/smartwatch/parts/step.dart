@@ -2,6 +2,8 @@ import '../utils.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
+import '../../../FirestoreService.dart';
+import '../../../main.dart';
 
 
 class StepPage extends StatefulWidget {
@@ -15,8 +17,15 @@ class _StepPageState extends State<StepPage> with SingleTickerProviderStateMixin
   bool _weekSelected = false;
   bool _monthSelected = false;
 
+  void updateFirestore() async {
+    await FirestoreService(uid: "${user.email}").stepFeatures(day, steps_day_steps, steps_day_distance);
+    await FirestoreService(uid: "${user.email}").hourlySteps(day, firestore_steps);
+  }
+
   @override
   void initState() {
+    updateFirestore();
+
     super.initState();
   }
 

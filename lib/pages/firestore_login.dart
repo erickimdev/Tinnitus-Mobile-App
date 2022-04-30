@@ -59,7 +59,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget _body() {
     if (loggedIn) {
       setState(() {
-        LR_appbar = "Logout";
+        // LR_appbar = "Logout";
+        LR_appbar = "";
       });
       return Column(
         children: <Widget>[
@@ -184,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 if (user != null) {
                   setState(() {
-                    LR_appbar = "Logout";
+                    LR_appbar = "";
                     // loggedIn = true;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -221,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    if (user != null) LR_appbar = "Logout";
+    // if (user != null) LR_appbar = "Logout";
   }
 
   @override
@@ -248,9 +249,9 @@ class _LoginPageState extends State<LoginPage> {
                     LR_button = "Login";
                   }
                 });
-                if (LR_appbar == "Logout") {
-                  confirmLogout();
-                }
+                // if (LR_appbar == "Logout") {
+                //   confirmLogout();
+                // }
               },
               child: Text(
                 LR_appbar,

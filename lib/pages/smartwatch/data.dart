@@ -186,3 +186,84 @@ class GraphData {
     int steps_month_steps = 0;
     int steps_month_distance = 0;
 // endregion
+
+
+
+void clearAllData() {
+  // SLEEP
+  sleep_dayData = [];
+  sleep_weekdata = [];
+  sleep_monthdata = [];
+  // day data
+    sleep_allDayData = [];
+    sleep_day_awake = 0;
+    sleep_day_light = 0;
+    sleep_day_deep = 0;
+    sleep_day_rem = 0;
+  // week data
+    sleep_allWeekData = [];
+    sleep_week_awake = 0;
+    sleep_week_light = 0;
+    sleep_week_deep = 0;
+    sleep_week_rem = 0;
+  // month data
+    sleep_allMonthData = [];
+    sleep_month_awake = 0;
+    sleep_month_light = 0;
+    sleep_month_deep = 0;
+    sleep_month_rem = 0;
+
+
+  // HEART
+  firestore_hr = new Map();
+  heart_dayData = [];
+  heart_weekdata = [];
+  heart_monthdata = [];
+  // day data
+    heart_allDayData = [];
+    heart_day_heartrate = [];
+  // week data
+    heart_allWeekData = [];
+    heart_week_heartrate = [];
+  // month data
+    heart_allMonthData = [];
+    heart_month_heartrate = [];
+
+
+  // ACTIVITY
+  firestore_calories = new Map();
+  activity_dayData = [];
+  activity_weekdata = [];
+  activity_monthdata = [];
+  // day data
+    activity_allDayData = [];
+    activity_day_calories = 0;
+    activity_day_movemins = 0;
+  // week data
+    activity_allWeekData = [];
+    activity_week_calories = 0;
+    activity_week_movemins = 0;
+  // month data
+    activity_allMonthData = [];
+    activity_month_calories = 0;
+    activity_month_movemins = 0;
+
+
+  // STEP
+  firestore_steps = new Map();
+  steps_dayData = [];
+  steps_weekdata = [];
+  steps_monthdata = [];
+  // day data
+  steps_allDayData = [];
+  steps_day_steps = 0;
+  steps_day_distance = 0;
+  // week data
+  steps_allWeekData = [];
+  steps_week_steps = 0;
+  steps_week_distance = 0;
+  // month data
+  steps_allMonthData = [];
+  steps_month_steps = 0;
+  steps_month_distance = 0;
+}

@@ -19,6 +19,7 @@ User user;
 bool loggedIn = false;
 bool calendarSynced = false;
 bool dailySubmitted = false;
+bool smartwatchUploaded = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

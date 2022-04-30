@@ -111,7 +111,10 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
 
   @override
   void initState() {
-    updateFirestore();
+    if (!smartwatchUploaded) {
+      smartwatchUploaded = true;
+      updateFirestore();
+    }
 
     super.initState();
   }
@@ -128,6 +131,21 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
           centerTitle: true,
           backgroundColor: Colors.black12,
           elevation: 5,
+          actions: [
+            IconButton(
+              splashRadius: 20,
+              icon: Icon(Icons.refresh, size: 30,),
+              onPressed: () async {
+                // // refresh date (if midnight passed)
+                // DateTime d = DateTime.now();
+                // day = DateTime(d.year, d.month, d.day);
+
+                await Navigator.pushNamed(context, '/api');
+                updateFirestore();
+              },
+            )
+          ],
+
         ),
 
         body: Center(

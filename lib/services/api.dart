@@ -931,20 +931,21 @@ class _APICallPageState extends State<APICallPage> {
   void initState() {
     super.initState();
 
-    if (!loggedIn) {
-      // POST REQUEST GOOGLE LOGIN
-      if (accessToken == null) {
-        // get data
-        startHttpServer();
+    // reset data
+    authorizationCode = null;
+    clearAllData();
 
-        // authorize
-        flutterWebViewPlugin.onUrlChanged.listen((String url) {
-          if (mounted) setState(() { if (url.contains("code=")) flutterWebViewPlugin.close(); }); });
-        startAuthorization();
-      }
+    // get data
+    startHttpServer();
+
+    // if (!loggedIn) {
+      // authorize
+      flutterWebViewPlugin.onUrlChanged.listen((String url) {
+        if (mounted) setState(() { if (url.contains("code=")) flutterWebViewPlugin.close(); }); });
+      startAuthorization();
 
       loggedIn = true;
-    }
+    // }
   }
 
 

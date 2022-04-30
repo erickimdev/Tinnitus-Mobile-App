@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    // if (user != null) LR_appbar = "Logout";
+    if (user != null) LR_appbar = "";
   }
 
   @override

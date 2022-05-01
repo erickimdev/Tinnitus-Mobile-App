@@ -47,25 +47,164 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     );
   }
 
+
   void updateFirestore() async {
     // region HEART
-    int avg_hr = heart_day_heartrate.reduce((a,b)=>a+b).toDouble() ~/ heart_day_heartrate.length;
-    int max_hr = heart_day_heartrate.reduce(max);
-    int min_hr = heart_day_heartrate.reduce(min);
-    await FirestoreService(uid: "${user.email}").heartFeatures(day, avg_hr, max_hr, min_hr);
-    await FirestoreService(uid: "${user.email}").hourlyHeartRate(day, firestore_hr);
+    Map<DateTime, List<int>> hrs = {};
+    Map<DateTime, Map<int, List<int>>> hourly_hrs = {};
+
+    heart_allWeekData.forEach((i) {
+      DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime date = new DateTime(d.year, d.month, d.day);
+
+      // features
+      List<int> list = hrs[date] ?? [];
+      list.add(i.bpm);
+      hrs[date] = list;
+
+      // hourly heart rate
+      int hour = d.hour;
+      Map<int, List<int>> map = hourly_hrs[date] ?? {};
+      List<int> list2 = map[hour] ?? [];
+      list2.add(i.bpm);
+      map[hour] = list2;
+      hourly_hrs[date] = map;
+    });
+
+    // features
+    hrs.forEach((date, list) async {
+      int avg_hr = list.reduce((a,b)=>a+b).toDouble() ~/ list.length;
+      int max_hr = list.reduce(max);
+      int min_hr = list.reduce(min);
+
+      await FirestoreService(uid: "${user.email}").heartFeatures(date, avg_hr, max_hr, min_hr);
+    });
+
+    // hourly heart rate
+    hourly_hrs.forEach((date, map) async {
+      Map<String, int> res_map = {};
+      map.forEach((hour, list) {
+        String time = "$hour:00".padLeft(5, '0');
+        int added = list.reduce((a,b)=>a+b).toDouble() ~/ list.length;
+        res_map[time] = added;
+      });
+
+      await FirestoreService(uid: "${user.email}").hourlyHeartRate(date, res_map);
+    });
     // endregion
 
 
     // region STEP
-    await FirestoreService(uid: "${user.email}").stepFeatures(day, steps_day_steps, steps_day_distance);
-    await FirestoreService(uid: "${user.email}").hourlySteps(day, firestore_steps);
+    Map<DateTime, List<int>> features_step = {};   // 0=steps, 1=distance
+    Map<DateTime, Map<int, int>> hourly_steps = {};
+
+    // distance
+    distance_allWeekData.forEach((i) {
+      DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime date = new DateTime(d.year, d.month, d.day);
+
+      List<int> dist_sum = features_step[date] ?? [0,0];
+      dist_sum[1] = dist_sum[1] + i.distance;
+      features_step[date] = dist_sum;
+    });
+
+    // steps
+    steps_allWeekData.forEach((i) {
+      DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime date = new DateTime(d.year, d.month, d.day);
+
+      // features
+      List<int> steps_sum = features_step[date] ?? [0,0];
+      steps_sum[0] = steps_sum[0] + i.steps;
+      features_step[date] = steps_sum;
+
+      // hourly steps
+      int total = 0;
+      int hour = d.hour;
+
+      Map<int, int> map = hourly_steps[date] ?? {};
+      map[hour] = (map[hour] ?? total) + i.steps;
+      hourly_steps[date] = map;
+      total += i.steps;
+    });
+
+    // features
+    features_step.forEach((date, tuple) async {
+      int steps = tuple[0];
+      int distance = tuple[1];
+      if (steps != 0) await FirestoreService(uid: "${user.email}").stepFeatures(date, steps, distance);
+    });
+
+    // hourly steps
+    hourly_steps.forEach((date, map) async {
+      Map<String, int> res_map = {};
+      int total = 0;
+
+      map.forEach((hour, sum) {
+        String time = "$hour:00".padLeft(5, '0');
+        total += sum;
+        res_map[time] = total;
+      });
+
+      await FirestoreService(uid: "${user.email}").hourlySteps(date, res_map);
+    });
     // endregion
 
 
     // region ACTIVITY
-    await FirestoreService(uid: "${user.email}").activityFeatures(day, activity_day_calories, activity_day_movemins);
-    await FirestoreService(uid: "${user.email}").hourlyCalories(day, firestore_calories);
+    Map<DateTime, List<int>> features_activity = {};   // 0=calories, 1=move mins
+    Map<DateTime, Map<int, int>> hourly_calories = {};
+
+    // movement minutes
+    movemins_allWeekData.forEach((i) {
+      DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime date = new DateTime(d.year, d.month, d.day);
+
+      List<int> tuple = features_step[date] ?? [0,0];
+      tuple[1] = tuple[1] + i.move_minutes;
+      features_step[date] = tuple;
+    });
+
+    // calories
+    activity_allWeekData.forEach((i) {
+      DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime date = new DateTime(d.year, d.month, d.day);
+
+      // features
+      List<int> tuple = features_step[date] ?? [0,0];
+      tuple[0] = tuple[0] + i.burned;
+      features_step[date] = tuple;
+
+      // hourly calories
+      int total = 0;
+      int hour = d.hour;
+
+      Map<int, int> map = hourly_calories[date] ?? {};
+      map[hour] = (map[hour] ?? total) + i.burned;
+      hourly_calories[date] = map;
+      total += i.burned;
+    });
+
+    // features
+    features_step.forEach((date, tuple) async {
+      int calories = tuple[0];
+      int move_mins = tuple[1];
+      if (calories != 0) await FirestoreService(uid: "${user.email}").activityFeatures(date, calories, move_mins);
+    });
+
+    // hourly calories
+    hourly_calories.forEach((date, map) async {
+      Map<String, int> res_map = {};
+      int total = 0;
+
+      map.forEach((hour, sum) {
+        String time = "$hour:00".padLeft(5, '0');
+        total += sum;
+        res_map[time] = total;
+      });
+
+      await FirestoreService(uid: "${user.email}").hourlyCalories(date, res_map);
+    });
     // endregion
 
 
@@ -108,6 +247,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
       await FirestoreService(uid: "${user.email}").sleepTracker(day, tracker);
     //endregion
   }
+
 
   @override
   void initState() {
@@ -196,13 +336,17 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
           ),
         ),
 
+
         // floatingActionButton: FloatingActionButton(
         //   backgroundColor: Colors.red,
         //   onPressed: () {
-        //     Navigator.pushNamed(context, "/test");
+        //
+        //
+        //
         //   },
         //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
         // ),
+
 
       ),
     );

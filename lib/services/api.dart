@@ -811,9 +811,17 @@ class _APICallPageState extends State<APICallPage> {
         var move_mins = jsonDecode(httpResponse.body)['bucket'][0]['dataset'][2]['point'];
         for (var i in move_mins) {
           int mins = int.parse((i['value'][0]['intVal']).toString());
+          MovementMinsData data = new MovementMinsData(
+              starttime: i['startTimeNanos'],
+              endtime: i['endTimeNanos'],
+              move_minutes: mins
+          );
 
           if (duration == "day") activity_day_movemins += mins;
-          if (duration == "week") activity_week_movemins += mins;
+          if (duration == "week") {
+            activity_week_movemins += mins;
+            movemins_allWeekData.add(data);
+          }
           if (duration == "month") activity_month_movemins += mins;
         }
         // endregion
@@ -837,9 +845,17 @@ class _APICallPageState extends State<APICallPage> {
         var distance = jsonDecode(httpResponse.body)['bucket'][0]['dataset'][4]['point'];
         for (var i in distance) {
           int distance = int.parse(double.parse((i['value'][0]['fpVal']).toString()).floor().toString());
+          DistanceData data = new DistanceData(
+              starttime: i['startTimeNanos'],
+              endtime: i['endTimeNanos'],
+              distance: distance
+          );
 
           if (duration == "day") steps_day_distance += distance;
-          if (duration == "week") steps_week_distance += distance;
+          if (duration == "week") {
+            steps_week_distance += distance;
+            distance_allWeekData.add(data);
+          }
           if (duration == "month") steps_month_distance += distance;
         }
         // endregion

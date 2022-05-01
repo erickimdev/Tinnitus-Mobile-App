@@ -5,7 +5,7 @@ import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
 // "current" date to read data
-//   DateTime d = DateTime(2021, 9, 17);
+//   DateTime d = DateTime(2022,4,29);
   DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
@@ -138,6 +138,12 @@ class GraphData {
     final int burned;
     CalorieData({this.starttime, this.endtime, this.burned});
   }
+  class MovementMinsData {
+    final String starttime;
+    final String endtime;
+    final int move_minutes;
+    MovementMinsData({this.starttime, this.endtime, this.move_minutes});
+  }
 
   Map<String, int> firestore_calories = new Map();
 
@@ -151,6 +157,7 @@ class GraphData {
     int activity_day_movemins = 0;
   // week data
     List<CalorieData> activity_allWeekData = [];
+    List<MovementMinsData> movemins_allWeekData = [];
     int activity_week_calories = 0;
     int activity_week_movemins = 0;
   // month data
@@ -166,6 +173,12 @@ class GraphData {
     final int steps;
     StepData({this.starttime, this.endtime, this.steps});
   }
+  class DistanceData {
+    final String starttime;
+    final String endtime;
+    final int distance;
+    DistanceData({this.starttime, this.endtime, this.distance});
+  }
 
   Map<String, int> firestore_steps = new Map();
 
@@ -179,6 +192,7 @@ class GraphData {
     int steps_day_distance = 0;
   // week data
     List<StepData> steps_allWeekData = [];
+    List<DistanceData> distance_allWeekData = [];
     int steps_week_steps = 0;
     int steps_week_distance = 0;
   // month data

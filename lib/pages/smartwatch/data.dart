@@ -5,7 +5,7 @@ import 'package:oauth2_client/google_oauth2_client.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
 // "current" date to read data
-//   DateTime d = DateTime(2022,4,29);
+//   DateTime d = DateTime(2021,9,7);
   DateTime d = DateTime.now();
   DateTime day = DateTime(d.year, d.month, d.day);
 
@@ -74,38 +74,6 @@ class GraphData {
   GraphData(this.day, this.value);
 }
 
-// region SLEEP DATA
-  class SleepData {
-    final String starttime;
-    final String endtime;
-    final String type;
-    SleepData({this.starttime, this.endtime, this.type});
-  }
-
-  List<charts.Series<GraphData, DateTime>> sleep_dayData;
-  List<charts.Series<GraphData, DateTime>> sleep_weekdata;
-  List<charts.Series<GraphData, DateTime>> sleep_monthdata;
-
-  // day data
-    List<SleepData> sleep_allDayData = [];
-    int sleep_day_awake = 0;
-    int sleep_day_light = 0;
-    int sleep_day_deep = 0;
-    int sleep_day_rem = 0;
-  // week data
-    List<SleepData> sleep_allWeekData = [];
-    int sleep_week_awake = 0;
-    int sleep_week_light = 0;
-    int sleep_week_deep = 0;
-    int sleep_week_rem = 0;
-  // month data
-    List<SleepData> sleep_allMonthData = [];
-    int sleep_month_awake = 0;
-    int sleep_month_light = 0;
-    int sleep_month_deep = 0;
-    int sleep_month_rem = 0;
-// endregion
-
 // region HEART DATA
   class HeartData {
     final String starttime;
@@ -131,53 +99,12 @@ class GraphData {
     List<int> heart_month_heartrate = [];
 // endregion
 
-// region ACTIVITY DATA
-  class CalorieData {
-    final String starttime;
-    final String endtime;
-    final int burned;
-    CalorieData({this.starttime, this.endtime, this.burned});
-  }
-  class MovementMinsData {
-    final String starttime;
-    final String endtime;
-    final int move_minutes;
-    MovementMinsData({this.starttime, this.endtime, this.move_minutes});
-  }
-
-  Map<String, int> firestore_calories = new Map();
-
-  List<charts.Series<GraphData, DateTime>> activity_dayData;
-  List<charts.Series<GraphData, DateTime>> activity_weekdata;
-  List<charts.Series<GraphData, DateTime>> activity_monthdata;
-
-  // day data
-    List<CalorieData> activity_allDayData = [];
-    int activity_day_calories = 0;
-    int activity_day_movemins = 0;
-  // week data
-    List<CalorieData> activity_allWeekData = [];
-    List<MovementMinsData> movemins_allWeekData = [];
-    int activity_week_calories = 0;
-    int activity_week_movemins = 0;
-  // month data
-    List<CalorieData> activity_allMonthData = [];
-    int activity_month_calories = 0;
-    int activity_month_movemins = 0;
-// endregion
-
 // region STEPS DATA
   class StepData {
     final String starttime;
     final String endtime;
     final int steps;
     StepData({this.starttime, this.endtime, this.steps});
-  }
-  class DistanceData {
-    final String starttime;
-    final String endtime;
-    final int distance;
-    DistanceData({this.starttime, this.endtime, this.distance});
   }
 
   Map<String, int> firestore_steps = new Map();
@@ -192,7 +119,6 @@ class GraphData {
     int steps_day_distance = 0;
   // week data
     List<StepData> steps_allWeekData = [];
-    List<DistanceData> distance_allWeekData = [];
     int steps_week_steps = 0;
     int steps_week_distance = 0;
   // month data
@@ -201,9 +127,105 @@ class GraphData {
     int steps_month_distance = 0;
 // endregion
 
+// region ACTIVITY DATA
+class CalorieData {
+  final String starttime;
+  final String endtime;
+  final int burned;
+  CalorieData({this.starttime, this.endtime, this.burned});
+}
+
+Map<String, int> firestore_calories = new Map();
+
+List<charts.Series<GraphData, DateTime>> activity_dayData;
+List<charts.Series<GraphData, DateTime>> activity_weekdata;
+List<charts.Series<GraphData, DateTime>> activity_monthdata;
+
+// day data
+List<CalorieData> activity_allDayData = [];
+int activity_day_calories = 0;
+int activity_day_movemins = 0;
+// week data
+List<CalorieData> activity_allWeekData = [];
+int activity_week_calories = 0;
+int activity_week_movemins = 0;
+// month data
+List<CalorieData> activity_allMonthData = [];
+int activity_month_calories = 0;
+int activity_month_movemins = 0;
+// endregion
+
+// region SLEEP DATA
+class SleepData {
+  final String starttime;
+  final String endtime;
+  final String type;
+  SleepData({this.starttime, this.endtime, this.type});
+}
+
+List<charts.Series<GraphData, DateTime>> sleep_dayData;
+List<charts.Series<GraphData, DateTime>> sleep_weekdata;
+List<charts.Series<GraphData, DateTime>> sleep_monthdata;
+
+// day data
+List<SleepData> sleep_allDayData = [];
+int sleep_day_awake = 0;
+int sleep_day_light = 0;
+int sleep_day_deep = 0;
+int sleep_day_rem = 0;
+// week data
+List<SleepData> sleep_allWeekData = [];
+int sleep_week_awake = 0;
+int sleep_week_light = 0;
+int sleep_week_deep = 0;
+int sleep_week_rem = 0;
+// month data
+List<SleepData> sleep_allMonthData = [];
+int sleep_month_awake = 0;
+int sleep_month_light = 0;
+int sleep_month_deep = 0;
+int sleep_month_rem = 0;
+// endregion
+
+
+// region FIRESTORE
+  // HEART
+  List<HeartData> heart_firestoreData = [];
+
+  // STEP
+  class DistanceData {
+    final String starttime;
+    final String endtime;
+    final int distance;
+    DistanceData({this.starttime, this.endtime, this.distance});
+  }
+  List<StepData> steps_firestoreData = [];
+  List<DistanceData> distance_firestoreData = [];
+
+  // ACTIVITY
+  class MovementMinsData {
+    final String starttime;
+    final String endtime;
+    final int move_minutes;
+    MovementMinsData({this.starttime, this.endtime, this.move_minutes});
+  }
+  List<CalorieData> activity_firestoreData = [];
+  List<MovementMinsData> movemins_firestoreData = [];
+
+  // SLEEP
+  List<SleepData> sleep_firestoreData = [];
+// endregion
 
 
 void clearAllData() {
+  // FIRESTORE
+  heart_firestoreData = [];
+  steps_firestoreData = [];
+  distance_firestoreData = [];
+  activity_firestoreData = [];
+  movemins_firestoreData = [];
+
+
   // SLEEP
   sleep_dayData = [];
   sleep_weekdata = [];

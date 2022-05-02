@@ -714,7 +714,7 @@ class _APICallPageState extends State<APICallPage> {
 
   // HTTP PART
   Future<void> postRequest(DateTime starttime, DateTime endtime, String duration) async {
-    // POST request for sleep - requires 6 hours offset
+    // region POST request for sleep - requires 6 hours offset
       List<Map<String, String>> _aggregate_sleep = [
         // sleep
         {"dataTypeName": "com.google.sleep.segment"},       // 0
@@ -734,7 +734,6 @@ class _APICallPageState extends State<APICallPage> {
       );
 
       if (httpResponse_sleep.statusCode == 200) {
-        // region sleep
         var sleep = jsonDecode(httpResponse_sleep.body)['bucket'][0]['dataset'][0]['point'];
         for (var i in sleep) {
           SleepData data = new SleepData(
@@ -746,12 +745,13 @@ class _APICallPageState extends State<APICallPage> {
           if (duration == "day") sleep_allDayData.add(data);
           if (duration == "week") sleep_allWeekData.add(data);
           if (duration == "month") sleep_allMonthData.add(data);
+          if (duration == "firestore") sleep_firestoreData.add(data);
         }
-        //endregion
       }
+    // endregion
 
 
-    // POST request for heart, activity, steps
+    // region POST request for heart, activity, steps
       List<Map<String, String>> _aggregate = [
         // heart
         {"dataTypeName": "com.google.heart_rate.bpm"},      // 0
@@ -789,6 +789,7 @@ class _APICallPageState extends State<APICallPage> {
           if (duration == "day") heart_allDayData.add(data);
           if (duration == "week") heart_allWeekData.add(data);
           if (duration == "month") heart_allMonthData.add(data);
+          if (duration == "firestore") heart_firestoreData.add(data);
         }
         //endregion
 
@@ -805,6 +806,7 @@ class _APICallPageState extends State<APICallPage> {
           if (duration == "day") activity_allDayData.add(data);
           if (duration == "week") activity_allWeekData.add(data);
           if (duration == "month") activity_allMonthData.add(data);
+          if (duration == "firestore") activity_firestoreData.add(data);
         }
 
         // get movement minutes data
@@ -818,11 +820,9 @@ class _APICallPageState extends State<APICallPage> {
           );
 
           if (duration == "day") activity_day_movemins += mins;
-          if (duration == "week") {
-            activity_week_movemins += mins;
-            movemins_allWeekData.add(data);
-          }
+          if (duration == "week") activity_week_movemins += mins;
           if (duration == "month") activity_month_movemins += mins;
+          if (duration == "firestore") movemins_firestoreData.add(data);
         }
         // endregion
 
@@ -839,6 +839,7 @@ class _APICallPageState extends State<APICallPage> {
           if (duration == "day") steps_allDayData.add(data);
           if (duration == "week") steps_allWeekData.add(data);
           if (duration == "month") steps_allMonthData.add(data);
+          if (duration == "firestore") steps_firestoreData.add(data);
         }
 
         // get distance data
@@ -852,16 +853,15 @@ class _APICallPageState extends State<APICallPage> {
           );
 
           if (duration == "day") steps_day_distance += distance;
-          if (duration == "week") {
-            steps_week_distance += distance;
-            distance_allWeekData.add(data);
-          }
+          if (duration == "week") steps_week_distance += distance;
           if (duration == "month") steps_month_distance += distance;
+          if (duration == "firestore") distance_firestoreData.add(data);
         }
         // endregion
 
         setState(() {});
       }
+    // endregion
   }
   Future<void> startHttpServer() async {
     try {
@@ -892,6 +892,9 @@ class _APICallPageState extends State<APICallPage> {
               if (sleep_allDayData.isEmpty) await postRequest(dayBegin, dayEnd, "day");
               if (sleep_allWeekData.isEmpty) await postRequest(firstDayOfWeek, lastDayOfWeek, "week");
               if (sleep_allMonthData.isEmpty) await postRequest(firstDayOfMonth, lastDayOfMonth, "month");
+
+              // send POST request for refreshed firestore data - heart_firestoreData can be any of the 3
+              if (heart_firestoreData.isEmpty) await postRequest(dayBegin.subtract(Duration(days: 15)), dayEnd, "firestore");
 
               setState(() async {
                 // SLEEP

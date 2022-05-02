@@ -53,7 +53,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     Map<DateTime, List<int>> hrs = {};
     Map<DateTime, Map<int, List<int>>> hourly_hrs = {};
 
-    heart_allWeekData.forEach((i) {
+    heart_firestoreData.forEach((i) {
       DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
       DateTime date = new DateTime(d.year, d.month, d.day);
 
@@ -99,7 +99,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     Map<DateTime, Map<int, int>> hourly_steps = {};
 
     // distance
-    distance_allWeekData.forEach((i) {
+    distance_firestoreData.forEach((i) {
       DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
       DateTime date = new DateTime(d.year, d.month, d.day);
 
@@ -109,7 +109,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     });
 
     // steps
-    steps_allWeekData.forEach((i) {
+    steps_firestoreData.forEach((i) {
       DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
       DateTime date = new DateTime(d.year, d.month, d.day);
 
@@ -156,24 +156,24 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     Map<DateTime, Map<int, int>> hourly_calories = {};
 
     // movement minutes
-    movemins_allWeekData.forEach((i) {
+    movemins_firestoreData.forEach((i) {
       DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
       DateTime date = new DateTime(d.year, d.month, d.day);
 
-      List<int> tuple = features_step[date] ?? [0,0];
+      List<int> tuple = features_activity[date] ?? [0,0];
       tuple[1] = tuple[1] + i.move_minutes;
-      features_step[date] = tuple;
+      features_activity[date] = tuple;
     });
 
     // calories
-    activity_allWeekData.forEach((i) {
+    activity_firestoreData.forEach((i) {
       DateTime d = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
       DateTime date = new DateTime(d.year, d.month, d.day);
 
       // features
-      List<int> tuple = features_step[date] ?? [0,0];
+      List<int> tuple = features_activity[date] ?? [0,0];
       tuple[0] = tuple[0] + i.burned;
-      features_step[date] = tuple;
+      features_activity[date] = tuple;
 
       // hourly calories
       int total = 0;
@@ -186,7 +186,7 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
     });
 
     // features
-    features_step.forEach((date, tuple) async {
+    features_activity.forEach((date, tuple) async {
       int calories = tuple[0];
       int move_mins = tuple[1];
       if (calories != 0) await FirestoreService(uid: "${user.email}").activityFeatures(date, calories, move_mins);
@@ -209,42 +209,82 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
 
 
     // region SLEEP
-      // features
-      String awake = "${(sleep_day_awake / 60).floor()}h ${(sleep_day_awake % 60)}m";
-      String light = "${(sleep_day_light / 60).floor()}h ${(sleep_day_light % 60)}m";
-      String deep = "${(sleep_day_deep / 60).floor()}h ${(sleep_day_deep % 60)}m";
-      String rem = "${(sleep_day_rem / 60).floor()}h ${(sleep_day_rem % 60)}m";
+    Map<DateTime, Map<String, int>> features_sleep = {};
+    Map<DateTime, List<String>> allIntervals = {};
 
-      int s = int.parse(sleep_allDayData[0].starttime.substring(0, sleep_allDayData[0].starttime.length - 6));
-      DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-      String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+    sleep_firestoreData.forEach((i) {
+      DateTime s = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.starttime.substring(0, i.starttime.length - 6)));
+      DateTime e = new DateTime.fromMillisecondsSinceEpoch(int.parse(i.endtime.substring(0, i.endtime.length - 6)));
+      DateTime date = new DateTime(s.year, s.month, s.day);
 
-      int e = int.parse(sleep_allDayData.last.endtime.substring(0, sleep_allDayData.last.endtime.length - 6));
-      DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-      String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+      int start = int.parse(i.starttime.substring(0, i.starttime.length - 6));
+      int end = int.parse(i.endtime.substring(0, i.endtime.length - 6));
+      int mins = (end/60000).floor() - (start/60000).floor();
 
-      await FirestoreService(uid: "${user.email}").sleepFeatures(day, awake, light, deep, rem, start_time, end_time);
+      Map<String, int> map = features_sleep[date] ?? {};
+      if (i.type == "awake") {          // awake
+        int awake = map["awake"] ?? 0;
+        awake += mins;
+        map["awake"] = awake;
+      }
+      if (i.type == "light sleep") {    // light sleep
+        int light = map["light"] ?? 0;
+        light += mins;
+        map["light"] = light;
+      }
+      if (i.type == "deep sleep") {     // deep sleep
+        int deep = map["deep"] ?? 0;
+        deep += mins;
+        map["deep"] = deep;
+      }
+      if (i.type == "rem sleep") {      // rem sleep
+        int rem = map["rem"] ?? 0;
+        rem += mins;
+        map["rem"] = rem;
+      }
+      features_sleep[date] = map;
 
+      List<String> ranges = allIntervals[date] ?? [];
+      String start_time = "${s.hour.toString().padLeft(2,'0')}:${s.minute.toString().padLeft(2,'0')}";
+      String end_time = "${e.hour.toString().padLeft(2,'0')}:${e.minute.toString().padLeft(2,'0')}";
+      String format = "${i.type}~$start_time to $end_time";
+      ranges.add(format);
+      allIntervals[date] = ranges;
+    });
 
-      // sleep tracker
-      Map<String, String> tracker = new Map();
-      int count = 0;
+    // features
+    features_sleep.forEach((date, map) async {
+      int a = map["awake"] ?? 0;
+      int l = map["light"] ?? 0;
+      int d = map["deep"] ?? 0;
+      int r = map["rem"] ?? 0;
 
-      sleep_allDayData.forEach((i) {
-        int s = int.parse(i.starttime.substring(0, i.starttime.length - 6));
-        DateTime start = new DateTime.fromMillisecondsSinceEpoch(s);
-        String start_time = "${start.hour}:${start.minute}".padLeft(5, '0');
+      String awake = "${(a / 60).floor()}h ${(a % 60)}m";
+      String light = "${(l / 60).floor()}h ${(l % 60)}m";
+      String deep = "${(d / 60).floor()}h ${(d % 60)}m";
+      String rem = "${(r / 60).floor()}h ${(r % 60)}m";
 
-        int e = int.parse(i.endtime.substring(0, i.endtime.length - 6));
-        DateTime end = new DateTime.fromMillisecondsSinceEpoch(e);
-        String end_time = "${end.hour}:${end.minute}".padLeft(5, '0');
+      String start_time = allIntervals[date][0].split("~")[1].split(" to ")[0];
+      String end_time = allIntervals[date].last.split(" to ")[1];
 
-        count += 1;
+      await FirestoreService(uid: "${user.email}").sleepFeatures(date, awake, light, deep, rem, start_time, end_time);
+    });
 
-        tracker["${count.toString().padLeft(2, '0')} - ${i.type}"] = "$start_time to $end_time";
+    // sleep tracker
+    allIntervals.forEach((date, list) async {
+      Map<String, String> times = {};
+      int ct = 1;
+
+      list.forEach((i) {
+        String type = "${ct.toString().padLeft(2,'0')} - ${i.split("~")[0]}";
+        String interval = i.split("~")[1];
+        ct += 1;
+
+        times[type] = interval;
       });
 
-      await FirestoreService(uid: "${user.email}").sleepTracker(day, tracker);
+      await FirestoreService(uid: "${user.email}").sleepTracker(date, times);
+    });
     //endregion
   }
 
@@ -340,8 +380,6 @@ class _SmartwatchPageState extends State<SmartwatchPage> {
         // floatingActionButton: FloatingActionButton(
         //   backgroundColor: Colors.red,
         //   onPressed: () {
-        //
-        //
         //
         //   },
         //   child: Text("DEBUG", style: TextStyle(color: Colors.blue[800])),
